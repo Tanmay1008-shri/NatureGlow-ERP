@@ -314,18 +314,18 @@ export const Module7CRM: React.FC<Module7Props> = ({ reviews, orders, products }
                     <td className="p-3 text-zinc-500 max-w-xs truncate">{cust.address}</td>
                     <td className="p-3 font-bold font-mono">{cust.ordersCount} order(s)</td>
                     <td className="p-3 font-bold font-mono text-emerald-600 dark:text-emerald-400">
-                      ${cust.totalSpend.toFixed(2)}
+                      ₹{cust.totalSpend.toLocaleString('en-IN')}
                     </td>
                     <td className="p-3 text-[11px] text-zinc-600 dark:text-zinc-300">
                       {Array.from(cust.purchasedSkus).join(', ')}
                     </td>
                     <td className="p-3">
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                        cust.totalSpend > 50
+                        cust.totalSpend > 1000
                           ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
                           : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
                       }`}>
-                        {cust.totalSpend > 50 ? 'Glow VIP' : 'Eco Member'}
+                        {cust.totalSpend > 1000 ? 'Glow VIP' : 'Eco Member'}
                       </span>
                     </td>
                   </tr>

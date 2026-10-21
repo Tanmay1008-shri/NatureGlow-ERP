@@ -4,28 +4,34 @@ import {
   Plus,
   AlertTriangle,
   CheckCircle2,
-  Filter,
   Search,
-  PackagePlus,
   Truck,
   Leaf,
-  Layers,
-  Sparkles
+  Pencil,
+  Trash2
 } from 'lucide-react';
-import { RawMaterial, Product, RawMaterialCategory } from '../../types';
+import { RawMaterial, Product, UserRole } from '../../types';
 
 interface Module2Props {
   materials: RawMaterial[];
   products: Product[];
+  userRole: UserRole;
   onRestockMaterial: (materialId: string, addedStock: number) => void;
   onRestockFinishedProduct: (productId: string, addedStock: number) => void;
+  onEditProduct: (product: Product) => void;
+  onOpenCreateProduct: () => void;
+  onDeleteProduct: (productId: string) => void;
 }
 
 export const Module2Inventory: React.FC<Module2Props> = ({
   materials,
   products,
+  userRole,
   onRestockMaterial,
-  onRestockFinishedProduct
+  onRestockFinishedProduct,
+  onEditProduct,
+  onOpenCreateProduct,
+  onDeleteProduct
 }) => {
   const [activeTab, setActiveTab] = useState<'all' | 'raw' | 'packaging' | 'finished'>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -84,33 +90,45 @@ export const Module2Inventory: React.FC<Module2Props> = ({
             </span>
             <span className="text-xs text-zinc-400">•</span>
             <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">
-              Aggregated Stock Matrix
+              Aggregated Stock Matrix (₹ INR)
             </span>
           </div>
           <h2 className="text-2xl font-serif font-bold text-zinc-900 dark:text-white mt-1">
             Aggregated Inventory & Supply Chain Matrix
           </h2>
           <p className="text-xs sm:text-sm text-zinc-500">
-            Track global raw agricultural waste feeds, bioactive botanicals, circular packaging, and finished retail SKUs.
+            Track global raw agricultural waste feeds, bioactive botanicals, circular packaging, and manage finished retail SKUs.
           </p>
         </div>
 
-        {/* Low Stock Warning Banner */}
-        {lowStockCount > 0 && (
-          <div className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/60 text-red-700 dark:text-red-300 text-xs font-semibold">
-            <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
-            <span>{lowStockCount} item(s) below minimum safety reserve!</span>
-          </div>
-        )}
+        <div className="flex flex-wrap items-center gap-2">
+          {userRole === 'admin' && (
+            <button
+              onClick={onOpenCreateProduct}
+              className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs shadow-xs transition-colors cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>+ Add New Product to ERP</span>
+            </button>
+          )}
+
+          {/* Low Stock Warning Banner */}
+          {lowStockCount > 0 && (
+            <div className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/60 text-red-700 dark:text-red-300 text-xs font-semibold">
+              <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
+              <span>{lowStockCount} item(s) below minimum safety reserve!</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Filter and Search Bar */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         {/* Tiered Filter Tabs */}
-        <div className="flex items-center bg-zinc-100 dark:bg-zinc-800 p-1 rounded-xl border border-zinc-200 dark:border-zinc-700 w-full sm:w-auto">
+        <div className="flex items-center bg-zinc-100 dark:bg-zinc-800 p-1 rounded-xl border border-zinc-200 dark:border-zinc-700 w-full sm:w-auto overflow-x-auto">
           <button
             onClick={() => setActiveTab('all')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
               activeTab === 'all'
                 ? 'bg-white dark:bg-zinc-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
                 : 'text-zinc-600 dark:text-zinc-400'
@@ -120,7 +138,7 @@ export const Module2Inventory: React.FC<Module2Props> = ({
           </button>
           <button
             onClick={() => setActiveTab('raw')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
               activeTab === 'raw'
                 ? 'bg-white dark:bg-zinc-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
                 : 'text-zinc-600 dark:text-zinc-400'
@@ -130,7 +148,7 @@ export const Module2Inventory: React.FC<Module2Props> = ({
           </button>
           <button
             onClick={() => setActiveTab('packaging')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
               activeTab === 'packaging'
                 ? 'bg-white dark:bg-zinc-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
                 : 'text-zinc-600 dark:text-zinc-400'
@@ -140,7 +158,7 @@ export const Module2Inventory: React.FC<Module2Props> = ({
           </button>
           <button
             onClick={() => setActiveTab('finished')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
               activeTab === 'finished'
                 ? 'bg-white dark:bg-zinc-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
                 : 'text-zinc-600 dark:text-zinc-400'
@@ -163,17 +181,27 @@ export const Module2Inventory: React.FC<Module2Props> = ({
         </div>
       </div>
 
-      {/* Finished Retail Goods Section (if selected) */}
+      {/* Finished Retail Goods Section */}
       {(activeTab === 'all' || activeTab === 'finished') && (
         <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-xs">
           <div className="p-4 bg-zinc-50 dark:bg-zinc-800/40 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Boxes className="w-4 h-4 text-emerald-600" />
               <h3 className="font-serif font-bold text-sm text-zinc-900 dark:text-white">
-                Finished Retail Goods (Commercial Warehouse Stock)
+                Finished Retail Goods (Commercial Warehouse & ERP Catalog)
               </h3>
             </div>
-            <span className="text-xs text-zinc-500">{filteredProducts.length} Product Lines</span>
+            <div className="flex items-center space-x-3">
+              <span className="text-xs text-zinc-500">{filteredProducts.length} Product Lines</span>
+              {userRole === 'admin' && (
+                <button
+                  onClick={onOpenCreateProduct}
+                  className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold cursor-pointer"
+                >
+                  + Add Product
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="overflow-x-auto">
@@ -182,18 +210,26 @@ export const Module2Inventory: React.FC<Module2Props> = ({
                 <tr>
                   <th className="p-3">SKU & Product Name</th>
                   <th className="p-3">Status</th>
-                  <th className="p-3">Retail Price</th>
+                  <th className="p-3">Retail Price (₹)</th>
                   <th className="p-3">Finished Stock</th>
                   <th className="p-3">COGS / Unit</th>
-                  <th className="p-3">Action</th>
+                  <th className="p-3">ERP & Admin Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800 text-zinc-800 dark:text-zinc-200">
                 {filteredProducts.map((prod) => (
                   <tr key={prod.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/40">
-                    <td className="p-3 font-semibold">
-                      <div className="font-bold text-zinc-900 dark:text-white">{prod.name}</div>
-                      <div className="text-[11px] font-mono text-zinc-400">{prod.sku}</div>
+                    <td className="p-3 font-semibold flex items-center space-x-2.5">
+                      <img
+                        src={prod.image}
+                        alt={prod.name}
+                        referrerPolicy="no-referrer"
+                        className="w-9 h-9 rounded-lg object-cover shrink-0 border border-zinc-200 dark:border-zinc-700"
+                      />
+                      <div>
+                        <div className="font-bold text-zinc-900 dark:text-white">{prod.name}</div>
+                        <div className="text-[11px] font-mono text-zinc-400">{prod.sku}</div>
+                      </div>
                     </td>
                     <td className="p-3">
                       <span className={`px-2 py-0.5 rounded-full font-semibold text-[10px] uppercase ${
@@ -204,20 +240,45 @@ export const Module2Inventory: React.FC<Module2Props> = ({
                         {prod.status}
                       </span>
                     </td>
-                    <td className="p-3 font-mono font-bold">${prod.price.toFixed(2)}</td>
+                    <td className="p-3 font-mono font-bold text-zinc-900 dark:text-white">
+                      ₹{prod.price.toLocaleString('en-IN')}
+                    </td>
                     <td className="p-3">
                       <span className={`font-bold ${prod.current_stock > 50 ? 'text-emerald-600' : 'text-amber-500'}`}>
                         {prod.current_stock} units
                       </span>
                     </td>
-                    <td className="p-3 font-mono">${prod.cogs_cost.toFixed(2)}</td>
+                    <td className="p-3 font-mono">₹{prod.cogs_cost.toLocaleString('en-IN')}</td>
                     <td className="p-3">
-                      <button
-                        onClick={() => handleOpenRestock(prod.id, prod.name, 'product', 'units')}
-                        className="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[11px] font-semibold"
-                      >
-                        + Adjust Stock
-                      </button>
+                      <div className="flex items-center space-x-1.5">
+                        <button
+                          onClick={() => handleOpenRestock(prod.id, prod.name, 'product', 'units')}
+                          className="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[11px] font-semibold cursor-pointer"
+                        >
+                          + Stock
+                        </button>
+                        {userRole === 'admin' && (
+                          <>
+                            <button
+                              onClick={() => onEditProduct(prod)}
+                              className="px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-amber-950/60 hover:bg-amber-200 text-amber-800 dark:text-amber-300 border border-amber-300/60 text-[11px] font-semibold flex items-center space-x-1 cursor-pointer"
+                              title="Edit Price, Image & Specs"
+                            >
+                              <Pencil className="w-3 h-3" />
+                              <span>Edit</span>
+                            </button>
+                            {products.length > 1 && (
+                              <button
+                                onClick={() => onDeleteProduct(prod.id)}
+                                className="p-1.5 rounded-lg bg-red-50 dark:bg-red-950/60 hover:bg-red-100 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 cursor-pointer"
+                                title="Remove Product from ERP"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -247,7 +308,7 @@ export const Module2Inventory: React.FC<Module2Props> = ({
                   <th className="p-3">Material Name & Category</th>
                   <th className="p-3">Current Stock</th>
                   <th className="p-3">Safety Stock Buffer</th>
-                  <th className="p-3">Unit Cost</th>
+                  <th className="p-3">Unit Cost (₹ INR)</th>
                   <th className="p-3">Verified Source Partner</th>
                   <th className="p-3">Status</th>
                   <th className="p-3">Action</th>
@@ -291,7 +352,7 @@ export const Module2Inventory: React.FC<Module2Props> = ({
                       </td>
 
                       <td className="p-3 font-mono font-semibold">
-                        ${mat.cost_per_unit.toFixed(3)} / {mat.unit}
+                        ₹{mat.cost_per_unit.toFixed(2)} / {mat.unit}
                       </td>
 
                       <td className="p-3 text-zinc-600 dark:text-zinc-300 max-w-[160px] truncate">
@@ -315,7 +376,7 @@ export const Module2Inventory: React.FC<Module2Props> = ({
                       <td className="p-3">
                         <button
                           onClick={() => handleOpenRestock(mat.id, mat.name, 'material', mat.unit)}
-                          className="px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-[11px] font-semibold"
+                          className="px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-[11px] font-semibold cursor-pointer"
                         >
                           + Restock
                         </button>

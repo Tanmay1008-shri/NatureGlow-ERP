@@ -4,7 +4,7 @@ import {
   Boxes,
   FlaskConical,
   PackageCheck,
-  DollarSign,
+  IndianRupee,
   Recycle,
   Users,
   Shield,
@@ -54,6 +54,9 @@ interface ERPContainerProps {
   onAddWasteLog: (log: WasteCollectionLog) => void;
   onSimulateOrder: () => void;
   onSimulateDelivery: () => void;
+  onEditProduct: (product: Product) => void;
+  onOpenCreateProduct: () => void;
+  onDeleteProduct: (productId: string) => void;
 }
 
 export const ERPContainer: React.FC<ERPContainerProps> = ({
@@ -77,14 +80,17 @@ export const ERPContainer: React.FC<ERPContainerProps> = ({
   onAddRNDBudget,
   onAddWasteLog,
   onSimulateOrder,
-  onSimulateDelivery
+  onSimulateDelivery,
+  onEditProduct,
+  onOpenCreateProduct,
+  onDeleteProduct
 }) => {
   const modules = [
     { id: 1, name: 'Operations', subtitle: 'Executive Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
-    { id: 2, name: 'Inventory', subtitle: 'Aggregated Matrix', icon: <Boxes className="w-4 h-4" /> },
+    { id: 2, name: 'Inventory', subtitle: 'Catalog & Stock Matrix', icon: <Boxes className="w-4 h-4" /> },
     { id: 3, name: 'Production', subtitle: 'Recipe & Batches', icon: <FlaskConical className="w-4 h-4" /> },
     { id: 4, name: 'Fulfillment', subtitle: 'Order Lifecycle', icon: <PackageCheck className="w-4 h-4" /> },
-    { id: 5, name: 'Financials', subtitle: 'COGS & R&D Budget', icon: <DollarSign className="w-4 h-4" /> },
+    { id: 5, name: 'Financials', subtitle: 'COGS & R&D (₹ INR)', icon: <IndianRupee className="w-4 h-4" /> },
     { id: 6, name: 'Circularity', subtitle: 'Waste Logistics', icon: <Recycle className="w-4 h-4" /> },
     { id: 7, name: 'CRM & AI', subtitle: 'Customer Sentiment', icon: <Users className="w-4 h-4" /> },
     { id: 8, name: 'Security', subtitle: 'RBAC Access Control', icon: <Shield className="w-4 h-4" /> }
@@ -98,7 +104,7 @@ export const ERPContainer: React.FC<ERPContainerProps> = ({
           <div className="flex items-center space-x-2">
             <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
             <span>
-              <strong>Customer Preview Mode:</strong> You are viewing ERP data. To trigger batches or dispatch orders, switch to <strong>Corporate Admin</strong> or <strong>Lab Tech</strong> via the header or Module 8.
+              <strong>Customer Preview Mode:</strong> You are viewing ERP data. To add/remove products, edit ₹ prices, or trigger batches, switch to <strong>Corporate Admin</strong>.
             </span>
           </div>
           <button
@@ -155,9 +161,11 @@ export const ERPContainer: React.FC<ERPContainerProps> = ({
             rndProjects={rndProjects}
             wasteLogs={wasteLogs}
             batches={batches}
+            userRole={userRole}
             onNavigateToModule={setActiveModule}
             onSimulateOrder={onSimulateOrder}
             onSimulateDelivery={onSimulateDelivery}
+            onOpenCreateProduct={onOpenCreateProduct}
           />
         )}
 
@@ -165,8 +173,12 @@ export const ERPContainer: React.FC<ERPContainerProps> = ({
           <Module2Inventory
             materials={materials}
             products={products}
+            userRole={userRole}
             onRestockMaterial={onRestockMaterial}
             onRestockFinishedProduct={onRestockFinishedProduct}
+            onEditProduct={onEditProduct}
+            onOpenCreateProduct={onOpenCreateProduct}
+            onDeleteProduct={onDeleteProduct}
           />
         )}
 
@@ -220,6 +232,7 @@ export const ERPContainer: React.FC<ERPContainerProps> = ({
           <Module8RBAC
             userRole={userRole}
             setUserRole={setUserRole}
+            onOpenAdminEditor={onOpenCreateProduct}
           />
         )}
       </div>

@@ -1,18 +1,17 @@
 import React from 'react';
 import {
-  DollarSign,
+  IndianRupee,
   PackageCheck,
   FlaskConical,
   AlertTriangle,
   TrendingUp,
   Activity,
-  ArrowUpRight,
   Sparkles,
   PieChart as PieIcon,
   RefreshCw,
-  Clock
+  Plus
 } from 'lucide-react';
-import { Product, Order, RawMaterial, RNDProject, WasteCollectionLog, Batch } from '../../types';
+import { Product, Order, RawMaterial, RNDProject, WasteCollectionLog, Batch, UserRole } from '../../types';
 
 interface Module1Props {
   products: Product[];
@@ -21,9 +20,11 @@ interface Module1Props {
   rndProjects: RNDProject[];
   wasteLogs: WasteCollectionLog[];
   batches: Batch[];
+  userRole: UserRole;
   onNavigateToModule: (moduleIdx: number) => void;
   onSimulateOrder: () => void;
   onSimulateDelivery: () => void;
+  onOpenCreateProduct: () => void;
 }
 
 export const Module1Operations: React.FC<Module1Props> = ({
@@ -31,11 +32,12 @@ export const Module1Operations: React.FC<Module1Props> = ({
   orders,
   materials,
   rndProjects,
-  wasteLogs,
   batches,
+  userRole,
   onNavigateToModule,
   onSimulateOrder,
-  onSimulateDelivery
+  onSimulateDelivery,
+  onOpenCreateProduct
 }) => {
   // Financial & Operational Metrics
   const totalRevenue = orders.reduce((sum, o) => sum + o.total_amount, 0);
@@ -51,12 +53,11 @@ export const Module1Operations: React.FC<Module1Props> = ({
     (b) => b.status === 'Pending Safety Clearance' || b.status === 'Production'
   );
 
-  // SKU Distribution Calculation
-  const flagshipProduct = products.find((p) => p.id === 'prod-001');
-  const flagshipSalesEst = orders.reduce((sum, o) => {
-    const item = o.items.find((i) => i.product_id === 'prod-001');
-    return sum + (item ? item.quantity * item.price : 0);
-  }, 0);
+  const flagshipProduct = products[0];
+  const flagshipProfit = flagshipProduct ? flagshipProduct.price - flagshipProduct.cogs_cost : 507;
+  const flagshipMargin = flagshipProduct && flagshipProduct.price > 0
+    ? (((flagshipProduct.price - flagshipProduct.cogs_cost) / flagshipProduct.price) * 100).toFixed(1)
+    : '78.1';
 
   return (
     <div className="space-y-6">
@@ -69,7 +70,7 @@ export const Module1Operations: React.FC<Module1Props> = ({
             </span>
             <span className="text-xs text-zinc-400">•</span>
             <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">
-              Live Operations Sync
+              Live Operations Sync (₹ INR)
             </span>
           </div>
           <h2 className="text-2xl font-serif font-bold text-zinc-900 dark:text-white mt-1">
@@ -82,6 +83,15 @@ export const Module1Operations: React.FC<Module1Props> = ({
 
         {/* Quick Simulator Buttons */}
         <div className="flex flex-wrap items-center gap-2">
+          {userRole === 'admin' && (
+            <button
+              onClick={onOpenCreateProduct}
+              className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs shadow-xs transition-colors cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>+ Add Product SKU</span>
+            </button>
+          )}
           <button
             onClick={onSimulateOrder}
             className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-xs transition-colors cursor-pointer"
@@ -108,12 +118,12 @@ export const Module1Operations: React.FC<Module1Props> = ({
               Total Gross Revenue
             </span>
             <div className="p-2 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400">
-              <DollarSign className="w-4 h-4" />
+              <IndianRupee className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-extrabold text-zinc-900 dark:text-white">
-              ${totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              ₹{totalRevenue.toLocaleString('en-IN')}
             </div>
             <div className="flex items-center space-x-1 text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-1">
               <TrendingUp className="w-3.5 h-3.5" />
@@ -227,13 +237,17 @@ export const Module1Operations: React.FC<Module1Props> = ({
                 Live commercial yield vs development stage across catalog SKUs.
               </p>
             </div>
-            <span className="text-xs font-mono text-zinc-400">Total Catalog: 4 SKUs</span>
+            <span className="text-xs font-mono text-zinc-400">Total Catalog: {products.length} SKUs</span>
           </div>
 
           <div className="space-y-4 pt-2">
             {products.map((prod) => {
               const isLive = prod.status === 'Active';
-              const percentage = isLive ? 100 : prod.id === 'prod-002' ? 78 : prod.id === 'prod-003' ? 46 : 25;
+              const skuSales = orders.reduce((sum, o) => {
+                const item = o.items.find((i) => i.product_id === prod.id);
+                return sum + (item ? item.quantity * item.price : 0);
+              }, 0);
+              const percentage = isLive ? 100 : prod.id === 'prod-002' ? 78 : prod.id === 'prod-003' ? 46 : 30;
               const color = isLive
                 ? 'bg-emerald-500'
                 : prod.id === 'prod-002'
@@ -254,7 +268,7 @@ export const Module1Operations: React.FC<Module1Props> = ({
                       </span>
                     </span>
                     <span className="font-bold text-zinc-900 dark:text-white">
-                      {isLive ? `$${flagshipSalesEst.toFixed(2)} (100% Commercial)` : `${percentage}% R&D Readiness`}
+                      {isLive ? `₹${skuSales.toLocaleString('en-IN')} • Price: ₹${prod.price}` : `${percentage}% R&D Readiness (₹${prod.price})`}
                     </span>
                   </div>
 
@@ -272,7 +286,7 @@ export const Module1Operations: React.FC<Module1Props> = ({
 
           <div className="mt-6 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/60 flex items-center justify-between">
             <div className="text-xs text-zinc-600 dark:text-zinc-300">
-              <span className="font-bold text-zinc-900 dark:text-white">Flagship Unit Contribution:</span> $21.85 gross profit per $28.00 jar (78.0% Gross Margin).
+              <span className="font-bold text-zinc-900 dark:text-white">Flagship Unit Contribution:</span> ₹{flagshipProfit} gross profit per ₹{flagshipProduct?.price || 649} jar ({flagshipMargin}% Gross Margin).
             </div>
             <button
               onClick={() => onNavigateToModule(3)}

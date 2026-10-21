@@ -10,7 +10,8 @@ import {
   Menu,
   X,
   FlaskConical,
-  UserCheck
+  UserCheck,
+  SlidersHorizontal
 } from 'lucide-react';
 import { UserRole } from '../types';
 
@@ -23,6 +24,7 @@ interface NavbarProps {
   setDarkMode: (val: boolean | ((prev: boolean) => boolean)) => void;
   cartCount: number;
   openCart: () => void;
+  onOpenAdminEditor: () => void;
   activeERPModule?: number;
   setActiveERPModule?: (mod: number) => void;
 }
@@ -35,7 +37,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   darkMode,
   setDarkMode,
   cartCount,
-  openCart
+  openCart,
+  onOpenAdminEditor
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
@@ -96,8 +99,19 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </div>
 
-          {/* Right Controls: Role Switcher, Dark Mode, Cart */}
-          <div className="flex items-center space-x-2 sm:space-x-3">
+          {/* Right Controls: Admin Product Editor, Role Switcher, Dark Mode, Cart */}
+          <div className="flex items-center space-x-2 sm:space-x-2.5">
+            {userRole === 'admin' && (
+              <button
+                onClick={onOpenAdminEditor}
+                className="hidden lg:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-colors cursor-pointer"
+                title="Open Admin Product & Price Editor"
+              >
+                <SlidersHorizontal className="w-3.5 h-3.5" />
+                <span>Admin Product Editor</span>
+              </button>
+            )}
+
             {/* Role Switcher Pill */}
             <div className="relative">
               <button
@@ -202,6 +216,18 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Layers className="w-4 h-4" />
               <span>Enterprise ERP (8 Modules)</span>
             </button>
+            {userRole === 'admin' && (
+              <button
+                onClick={() => {
+                  onOpenAdminEditor();
+                  setMobileMenuOpen(false);
+                }}
+                className="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-bold bg-amber-500/20 text-amber-700 dark:text-amber-300"
+              >
+                <SlidersHorizontal className="w-4 h-4" />
+                <span>Admin Product Editor</span>
+              </button>
+            )}
           </div>
         )}
       </div>

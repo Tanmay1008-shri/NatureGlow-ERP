@@ -19,6 +19,10 @@
   font-family: var(--font-serif);
 }
 
+.font-mono {
+  font-family: 'JetBrains Mono', 'Plus Jakarta Sans', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
 /* Custom scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;

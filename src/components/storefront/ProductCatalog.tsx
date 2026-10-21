@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Sparkles,
   ShoppingBag,
   Clock,
   FlaskConical,
@@ -9,22 +8,33 @@ import {
   Bell,
   Eye,
   X,
-  ShieldCheck,
   Recycle,
-  Layers
+  Layers,
+  Pencil,
+  Plus,
+  Trash2,
+  SlidersHorizontal
 } from 'lucide-react';
-import { Product } from '../../types';
+import { Product, UserRole } from '../../types';
 
 interface ProductCatalogProps {
   products: Product[];
+  userRole: UserRole;
   onAddToCart: (product: Product) => void;
   onNavigateToProduction: (product: Product) => void;
+  onEditProduct: (product: Product) => void;
+  onOpenCreateProduct: () => void;
+  onDeleteProduct: (productId: string) => void;
 }
 
 export const ProductCatalog: React.FC<ProductCatalogProps> = ({
   products,
+  userRole,
   onAddToCart,
-  onNavigateToProduction
+  onNavigateToProduction,
+  onEditProduct,
+  onOpenCreateProduct,
+  onDeleteProduct
 }) => {
   const [filter, setFilter] = useState<'all' | 'live' | 'rnd'>('all');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -36,6 +46,9 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
     if (filter === 'rnd') return p.status !== 'Active';
     return true;
   });
+
+  const liveCount = products.filter((p) => p.status === 'Active').length;
+  const rndCount = products.length - liveCount;
 
   const handleJoinWaitlist = (productName: string) => {
     if (!waitlistEmail || !waitlistEmail.includes('@')) return;
@@ -50,11 +63,11 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
     <section id="catalog-section" className="py-16 bg-zinc-50 dark:bg-zinc-950 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>
             <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 text-xs font-semibold uppercase tracking-wider mb-2">
               <FlaskConical className="w-3.5 h-3.5" />
-              <span>Multi-Product Skincare Architecture</span>
+              <span>Multi-Product Skincare Architecture (₹ INR)</span>
             </div>
             <h2 className="text-2xl sm:text-4xl font-serif font-bold text-zinc-900 dark:text-white">
               Circular Skincare Marketplace & Lab Pipeline
@@ -64,40 +77,70 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
             </p>
           </div>
 
-          {/* Filter Controls */}
-          <div className="flex items-center bg-zinc-200/80 dark:bg-zinc-800/80 p-1 rounded-xl self-start md:self-auto border border-zinc-300 dark:border-zinc-700">
-            <button
-              onClick={() => setFilter('all')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                filter === 'all'
-                  ? 'bg-white dark:bg-zinc-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
-              }`}
-            >
-              All SKUs ({products.length})
-            </button>
-            <button
-              onClick={() => setFilter('live')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                filter === 'live'
-                  ? 'bg-white dark:bg-zinc-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
-              }`}
-            >
-              Live & In-Stock (1)
-            </button>
-            <button
-              onClick={() => setFilter('rnd')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                filter === 'rnd'
-                  ? 'bg-white dark:bg-zinc-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
-              }`}
-            >
-              In R&D Lab ({products.length - 1})
-            </button>
+          <div className="flex flex-wrap items-center gap-2.5 self-start md:self-auto">
+            {userRole === 'admin' && (
+              <button
+                onClick={onOpenCreateProduct}
+                className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs shadow-sm transition-colors cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>+ Add Product to Store & ERP</span>
+              </button>
+            )}
+
+            {/* Filter Controls */}
+            <div className="flex items-center bg-zinc-200/80 dark:bg-zinc-800/80 p-1 rounded-xl border border-zinc-300 dark:border-zinc-700">
+              <button
+                onClick={() => setFilter('all')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  filter === 'all'
+                    ? 'bg-white dark:bg-zinc-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
+                }`}
+              >
+                All SKUs ({products.length})
+              </button>
+              <button
+                onClick={() => setFilter('live')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  filter === 'live'
+                    ? 'bg-white dark:bg-zinc-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
+                }`}
+              >
+                Live & In-Stock ({liveCount})
+              </button>
+              <button
+                onClick={() => setFilter('rnd')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  filter === 'rnd'
+                    ? 'bg-white dark:bg-zinc-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
+                }`}
+              >
+                In R&D Lab ({rndCount})
+              </button>
+            </div>
           </div>
         </div>
+
+        {/* Admin Quick Toolbar Banner */}
+        {userRole === 'admin' && (
+          <div className="mb-6 p-3.5 rounded-2xl bg-amber-50/90 dark:bg-amber-950/30 border border-amber-300/80 dark:border-amber-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div className="flex items-center space-x-2 text-amber-900 dark:text-amber-200">
+              <SlidersHorizontal className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>
+                <strong>Admin Catalog Mode Active:</strong> Click <strong>Edit</strong> on any card below to update its photo, ₹ INR price, or stock—or add/remove products across both the Storefront and ERP.
+              </span>
+            </div>
+            <button
+              onClick={() => onEditProduct(products[0])}
+              className="px-3 py-1.5 rounded-lg bg-zinc-900 dark:bg-amber-500 text-white dark:text-zinc-950 font-bold text-xs shrink-0 cursor-pointer"
+            >
+              Open Product & Price Editor
+            </button>
+          </div>
+        )}
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -118,6 +161,7 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
                   <img
                     src={product.image}
                     alt={product.name}
+                    referrerPolicy="no-referrer"
                     className={`w-full h-full object-cover object-center transition-transform duration-500 hover:scale-105 ${
                       !isLive ? 'filter brightness-90 saturate-85' : ''
                     }`}
@@ -127,12 +171,12 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
                   {isLive ? (
                     <div className="absolute top-3 left-3 bg-emerald-600 text-white px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center space-x-1 shadow-xs">
                       <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                      <span>Live Flagship</span>
+                      <span>Live Available</span>
                     </div>
                   ) : (
                     <div className="absolute top-3 left-3 bg-zinc-900/90 text-amber-300 border border-amber-500/30 backdrop-blur-xs px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center space-x-1 shadow-xs">
                       <FlaskConical className="w-3 h-3 text-amber-400" />
-                      <span>In R&D Lab ({product.target_launch})</span>
+                      <span>In R&D Lab ({product.target_launch || 'Q3 2027'})</span>
                     </div>
                   )}
 
@@ -143,15 +187,40 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
                     </div>
                   )}
 
-                  {/* Quick View Button Overlay */}
-                  <button
-                    onClick={() => setSelectedProduct(product)}
-                    className="absolute bottom-2 right-2 p-2 rounded-xl bg-white/90 dark:bg-zinc-900/90 hover:bg-white dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 shadow-md backdrop-blur-xs transition-transform active:scale-90"
-                    title="Quick View Specs"
-                    aria-label={`Quick view ${product.name}`}
-                  >
-                    <Eye className="w-4 h-4" />
-                  </button>
+                  {/* Admin Edit & Quick View Buttons Overlay */}
+                  <div className="absolute bottom-2 right-2 flex items-center space-x-1.5">
+                    {userRole === 'admin' && (
+                      <>
+                        <button
+                          onClick={() => onEditProduct(product)}
+                          className="px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-[11px] shadow-md flex items-center space-x-1 transition-transform active:scale-95 cursor-pointer"
+                          title="Edit Price, Image & Specs"
+                          aria-label={`Edit ${product.name}`}
+                        >
+                          <Pencil className="w-3 h-3" />
+                          <span>Edit</span>
+                        </button>
+                        {products.length > 1 && (
+                          <button
+                            onClick={() => onDeleteProduct(product.id)}
+                            className="p-1.5 rounded-xl bg-red-600/90 hover:bg-red-600 text-white shadow-md transition-transform active:scale-95 cursor-pointer"
+                            title="Remove product from Store & ERP"
+                            aria-label={`Remove ${product.name}`}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </>
+                    )}
+                    <button
+                      onClick={() => setSelectedProduct(product)}
+                      className="p-2 rounded-xl bg-white/90 dark:bg-zinc-900/90 hover:bg-white dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 shadow-md backdrop-blur-xs transition-transform active:scale-90 cursor-pointer"
+                      title="Quick View Specs"
+                      aria-label={`Quick view ${product.name}`}
+                    >
+                      <Eye className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Card Content */}
@@ -205,7 +274,7 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
                   <div className="pt-2 flex items-center justify-between">
                     <div>
                       <div className="text-lg font-bold text-zinc-900 dark:text-white">
-                        ${product.price.toFixed(2)}
+                        ₹{product.price.toLocaleString('en-IN')}
                       </div>
                       <div className="text-[10px] text-zinc-500 dark:text-zinc-400">
                         {product.size}
@@ -275,6 +344,7 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
                   <img
                     src={selectedProduct.image}
                     alt={selectedProduct.name}
+                    referrerPolicy="no-referrer"
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -375,27 +445,43 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
             <div className="p-4 sm:p-6 bg-zinc-50 dark:bg-zinc-800/40 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
               <div>
                 <span className="text-2xl font-bold text-zinc-900 dark:text-white">
-                  ${selectedProduct.price.toFixed(2)}
+                  ₹{selectedProduct.price.toLocaleString('en-IN')}
                 </span>
                 <span className="text-xs text-zinc-500 ml-2">/ {selectedProduct.size}</span>
               </div>
 
-              {selectedProduct.status === 'Active' ? (
-                <button
-                  onClick={() => {
-                    onAddToCart(selectedProduct);
-                    setSelectedProduct(null);
-                  }}
-                  className="flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition-all active:scale-95 cursor-pointer"
-                >
-                  <ShoppingBag className="w-4 h-4" />
-                  <span>Add to Bag</span>
-                </button>
-              ) : (
-                <div className="text-xs font-semibold text-amber-600 dark:text-amber-400">
-                  Target Launch: {selectedProduct.target_launch}
-                </div>
-              )}
+              <div className="flex items-center space-x-2">
+                {userRole === 'admin' && (
+                  <button
+                    onClick={() => {
+                      const prod = selectedProduct;
+                      setSelectedProduct(null);
+                      onEditProduct(prod);
+                    }}
+                    className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs cursor-pointer"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                    <span>Edit Product</span>
+                  </button>
+                )}
+
+                {selectedProduct.status === 'Active' ? (
+                  <button
+                    onClick={() => {
+                      onAddToCart(selectedProduct);
+                      setSelectedProduct(null);
+                    }}
+                    className="flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition-all active:scale-95 cursor-pointer"
+                  >
+                    <ShoppingBag className="w-4 h-4" />
+                    <span>Add to Bag</span>
+                  </button>
+                ) : (
+                  <div className="text-xs font-semibold text-amber-600 dark:text-amber-400">
+                    Target Launch: {selectedProduct.target_launch}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

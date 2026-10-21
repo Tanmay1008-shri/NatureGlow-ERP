@@ -15,7 +15,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     name: '2-in-1 Papaya Leaf, Coconut Coir, & Honey Face Scrub',
     tagline: 'Dual-action enzymatic exfoliant & bioactive barrier replenishment',
     description: 'Our award-winning flagship formulation marries upcycled coconut husk coir (micronized to 60 microns) with freshly harvested papaya leaf papain enzymes. Suspended in raw wildflower honey and nourishing cold-pressed botanicals, it gently polishes away dull epidermal cells without micro-tears while infusing continuous humectant moisture.',
-    price: 28.00,
+    price: 649,
     sku: 'NG-SCRUB-001',
     status: 'Active',
     current_stock: 340,
@@ -23,12 +23,12 @@ export const INITIAL_PRODUCTS: Product[] = [
     size: '100 ml / 3.4 fl oz',
     rating: 4.9,
     reviews_count: 142,
-    image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=800&q=80',
+    image: '/flagship-papaya-scrub.svg',
     features: [
       'Zero plastic microbeads: 100% biodegradable micronized coconut coir',
       'Natural papain proteolytic enzymes dissolve cellular debris',
       'Wildflower raw honey seals cellular hydration and calms irritation',
-      'Cold-pressed jojoba balance sebum without clogging pores',
+      'Cold-pressed jojoba balances sebum without clogging pores',
       'Packaged in infinite-recycle UV amber glass with stone paper label'
     ],
     key_ingredients: [
@@ -38,7 +38,7 @@ export const INITIAL_PRODUCTS: Product[] = [
       'Cold-Pressed Golden Jojoba Seed Oil',
       'Sweet Almond Oil & Vitamin E'
     ],
-    cogs_cost: 6.15,
+    cogs_cost: 142,
     sustainability_notes: 'Diverts 42g of coconut husk and 18g of agricultural papaya pruning waste per jar.'
   },
   {
@@ -46,7 +46,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     name: 'Charcoal & Aloe Deep Detox Cleanser',
     tagline: 'Adsorptive micro-carbon wash with soothing desert aloe vera',
     description: 'Engineered for congested urban complexions, this low-foaming gel utilizes steam-activated carbon pyrolyzed from spent coconut shells to vacuum environmental pollutants and micro-particulates without stripping the lipid barrier.',
-    price: 24.00,
+    price: 549,
     sku: 'NG-CLEAN-002',
     status: 'In-Development',
     current_stock: 0,
@@ -54,7 +54,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     size: '150 ml / 5.1 fl oz',
     rating: 4.8,
     reviews_count: 24,
-    image: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&w=900&q=85',
     features: [
       'Steam-activated bio-charcoal from discarded coconut shells',
       'Inner-leaf organic Aloe Barbadensis juice base',
@@ -68,7 +68,7 @@ export const INITIAL_PRODUCTS: Product[] = [
       'Cucumber Hydrosol'
     ],
     target_launch: 'Q2 2027',
-    cogs_cost: 5.40,
+    cogs_cost: 125,
     sustainability_notes: 'Utilizes carbon from coconut processing facilities that otherwise burn shells as low-grade fuel.'
   },
   {
@@ -76,7 +76,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     name: 'Upcycled Coffee Bean Revitalizing Eye Cream',
     tagline: 'High-polyphenol micro-circulation cream using salvaged cafe grounds',
     description: 'Targeted periorbital rescue. We reclaim freshly pulled espresso grounds from specialty partner roasteries, extracting pure chlorogenic acids and clean caffeine to banish morning puffiness, oxidative damage, and stubborn dark shadows.',
-    price: 32.00,
+    price: 799,
     sku: 'NG-EYE-003',
     status: 'In-Development',
     current_stock: 0,
@@ -84,7 +84,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     size: '15 ml / 0.5 fl oz',
     rating: 4.7,
     reviews_count: 16,
-    image: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1617897903246-719242758050?auto=format&fit=crop&w=900&q=85',
     features: [
       'Bio-fermented coffee oil packed with natural linoleic acid',
       'Targeted vasoconstriction to visibly brighten under-eye shadows',
@@ -98,7 +98,7 @@ export const INITIAL_PRODUCTS: Product[] = [
       'Green Tea Catechins'
     ],
     target_launch: 'Q3 2027',
-    cogs_cost: 6.80,
+    cogs_cost: 168,
     sustainability_notes: 'Rescues 65g of wet coffee grounds per unit, preventing anaerobic methane generation in landfills.'
   },
   {
@@ -106,7 +106,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     name: 'Hibiscus Seed & Mango Butter Night Recovery Balm',
     tagline: 'Ultra-rich barrier restoration powered by fruit processing by-products',
     description: 'An unctuous overnight sleeping cocoon. Cold-pressed butter from discarded mango processing stones combined with bio-active hibiscus seed ceramides delivers profound dermal repair while you sleep.',
-    price: 36.00,
+    price: 899,
     sku: 'NG-BALM-004',
     status: 'Concept',
     current_stock: 0,
@@ -114,7 +114,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     size: '50 ml / 1.7 fl oz',
     rating: 0,
     reviews_count: 0,
-    image: 'https://images.unsplash.com/photo-1608248597359-58a0b59bce22?auto=format&fit=crop&w=800&q=80',
+    image: '/hibiscus-mango-balm.svg',
     features: [
       'Upcycled mango kernel butter rich in stearic & oleic acids',
       'Cold-pressed wild hibiscus seed botanicals',
@@ -128,7 +128,7 @@ export const INITIAL_PRODUCTS: Product[] = [
       'Blue Tansy Essential Extract'
     ],
     target_launch: 'Q4 2027',
-    cogs_cost: 7.20,
+    cogs_cost: 185,
     sustainability_notes: 'Turns discarded fruit cannery stones into cosmetic-grade ultra-pure stearic butter.'
   }
 ];
@@ -141,7 +141,7 @@ export const INITIAL_RAW_MATERIALS: RawMaterial[] = [
     unit: 'g',
     current_stock: 74500,
     minimum_safety_stock: 20000,
-    cost_per_unit: 0.024,
+    cost_per_unit: 0.65,
     source_partner: 'GreenCoast Coastal Coconut Co-op',
     carbon_offset_per_kg: 2.8,
     notes: 'Triple steam-washed and micronized to velvety 60 microns. Non-abrasive.'
@@ -153,7 +153,7 @@ export const INITIAL_RAW_MATERIALS: RawMaterial[] = [
     unit: 'g',
     current_stock: 36200,
     minimum_safety_stock: 15000,
-    cost_per_unit: 0.042,
+    cost_per_unit: 1.15,
     source_partner: 'SunValley Agro-Farms Alliance',
     carbon_offset_per_kg: 1.9,
     notes: 'Active papain standardized enzyme activity > 2,400 USP units/mg.'
@@ -165,7 +165,7 @@ export const INITIAL_RAW_MATERIALS: RawMaterial[] = [
     unit: 'g',
     current_stock: 58000,
     minimum_safety_stock: 18000,
-    cost_per_unit: 0.048,
+    cost_per_unit: 1.25,
     source_partner: 'Western Ghats Apiaries',
     carbon_offset_per_kg: 0.8,
     notes: 'Unpasteurized cold-filtered raw honey with intact natural antimicrobial propolis.'
@@ -177,7 +177,7 @@ export const INITIAL_RAW_MATERIALS: RawMaterial[] = [
     unit: 'ml',
     current_stock: 28400,
     minimum_safety_stock: 10000,
-    cost_per_unit: 0.052,
+    cost_per_unit: 1.40,
     source_partner: 'Desert Bloom Organics',
     carbon_offset_per_kg: 1.1,
     notes: 'Pure wax ester composition identical to human sebum.'
@@ -189,7 +189,7 @@ export const INITIAL_RAW_MATERIALS: RawMaterial[] = [
     unit: 'g',
     current_stock: 31000,
     minimum_safety_stock: 12000,
-    cost_per_unit: 0.032,
+    cost_per_unit: 0.85,
     source_partner: 'GreenCoast Bio-Energy & Carbon Lab',
     carbon_offset_per_kg: 3.4,
     notes: 'High surface area (1,100 m2/g) for micro-pore contaminant adsorption.'
@@ -201,7 +201,7 @@ export const INITIAL_RAW_MATERIALS: RawMaterial[] = [
     unit: 'g',
     current_stock: 19500,
     minimum_safety_stock: 10000,
-    cost_per_unit: 0.016,
+    cost_per_unit: 0.45,
     source_partner: 'UrbanRoast Specialty Coffee Collective',
     carbon_offset_per_kg: 2.1,
     notes: 'Collected within 12 hours of brew, lyophilized to 3% residual moisture.'
@@ -213,7 +213,7 @@ export const INITIAL_RAW_MATERIALS: RawMaterial[] = [
     unit: 'units',
     current_stock: 1150,
     minimum_safety_stock: 450,
-    cost_per_unit: 1.45,
+    cost_per_unit: 32.00,
     source_partner: 'EcoVessel Container Works',
     carbon_offset_per_kg: 0.6,
     notes: '70% post-consumer recycled glass; 100% recyclable infinitely.'
@@ -225,7 +225,7 @@ export const INITIAL_RAW_MATERIALS: RawMaterial[] = [
     unit: 'units',
     current_stock: 1320,
     minimum_safety_stock: 500,
-    cost_per_unit: 0.65,
+    cost_per_unit: 14.00,
     source_partner: 'AluCraft Packaging Ltd',
     carbon_offset_per_kg: 0.4,
     notes: 'Fitted with biodegradable wood-pulp liner.'
@@ -237,7 +237,7 @@ export const INITIAL_RAW_MATERIALS: RawMaterial[] = [
     unit: 'units',
     current_stock: 2450,
     minimum_safety_stock: 600,
-    cost_per_unit: 0.35,
+    cost_per_unit: 8.00,
     source_partner: 'TerraStone Print Lab',
     carbon_offset_per_kg: 0.9,
     notes: 'Calcium carbonate tree-free paper printed with non-toxic soy inks.'
@@ -249,7 +249,7 @@ export const INITIAL_RAW_MATERIALS: RawMaterial[] = [
     unit: 'units',
     current_stock: 310,
     minimum_safety_stock: 400, // Trigger low stock warning!
-    cost_per_unit: 1.75,
+    cost_per_unit: 38.00,
     source_partner: 'EcoVessel Container Works',
     carbon_offset_per_kg: 0.5,
     notes: 'For cleanser line. Low stock warning active.'
@@ -331,20 +331,20 @@ export const INITIAL_ORDERS: Order[] = [
   {
     id: 'ord-1001',
     order_number: 'ORD-2026-9810',
-    customer_name: 'Sophia Montgomery',
-    customer_email: 'sophia.m@gmail.com',
-    customer_address: '442 Kensington Way, Seattle, WA 98101',
-    subtotal: 56.00,
-    discount: 5.60,
-    total_amount: 50.40,
+    customer_name: 'Ananya Deshmukh',
+    customer_email: 'ananya.d@gmail.com',
+    customer_address: '402 Koregaon Park, Lane 7, Pune, MH 411001',
+    subtotal: 1298,
+    discount: 130,
+    total_amount: 1168,
     status: 'Delivered',
     created_at: '2026-10-14 14:22',
-    tracking_code: 'NG-FEDEX-948201',
+    tracking_code: 'NG-BLUEDART-948201',
     items: [
       {
         product_id: 'prod-001',
         product_name: '2-in-1 Papaya Leaf, Coconut Coir, & Honey Face Scrub',
-        price: 28.00,
+        price: 649,
         quantity: 2,
         sku: 'NG-SCRUB-001'
       }
@@ -353,20 +353,20 @@ export const INITIAL_ORDERS: Order[] = [
   {
     id: 'ord-1002',
     order_number: 'ORD-2026-9811',
-    customer_name: 'Julian Vance',
-    customer_email: 'j.vance@designstudio.co',
-    customer_address: '891 Pinecrest Blvd, Austin, TX 78704',
-    subtotal: 28.00,
+    customer_name: 'Rohan Kulkarni',
+    customer_email: 'rohan.k@designstudio.in',
+    customer_address: '891 Indiranagar 100ft Rd, Bengaluru, KA 560038',
+    subtotal: 649,
     discount: 0,
-    total_amount: 28.00,
+    total_amount: 649,
     status: 'Dispatched',
     created_at: '2026-10-18 09:40',
-    tracking_code: 'NG-UPS-771920',
+    tracking_code: 'NG-DELHIVERY-771920',
     items: [
       {
         product_id: 'prod-001',
         product_name: '2-in-1 Papaya Leaf, Coconut Coir, & Honey Face Scrub',
-        price: 28.00,
+        price: 649,
         quantity: 1,
         sku: 'NG-SCRUB-001'
       }
@@ -375,20 +375,20 @@ export const INITIAL_ORDERS: Order[] = [
   {
     id: 'ord-1003',
     order_number: 'ORD-2026-9812',
-    customer_name: 'Aria Chen',
-    customer_email: 'aria.chen@berkeley.edu',
-    customer_address: '2204 Bancroft Way, Berkeley, CA 94720',
-    subtotal: 84.00,
-    discount: 16.80,
-    total_amount: 67.20,
+    customer_name: 'Meera Nair',
+    customer_email: 'meera.nair@iitb.ac.in',
+    customer_address: '2204 Pali Hill, Bandra West, Mumbai, MH 400050',
+    subtotal: 1947,
+    discount: 389,
+    total_amount: 1558,
     status: 'Packaging',
     created_at: '2026-10-20 16:15',
-    tracking_code: 'NG-USPS-331902',
+    tracking_code: 'NG-BLUEDART-331902',
     items: [
       {
         product_id: 'prod-001',
         product_name: '2-in-1 Papaya Leaf, Coconut Coir, & Honey Face Scrub',
-        price: 28.00,
+        price: 649,
         quantity: 3,
         sku: 'NG-SCRUB-001'
       }
@@ -397,12 +397,12 @@ export const INITIAL_ORDERS: Order[] = [
   {
     id: 'ord-1004',
     order_number: 'ORD-2026-9813',
-    customer_name: 'Marcus Brody',
-    customer_email: 'mbrody@ecotech.org',
-    customer_address: '110 Commonwealth Ave, Boston, MA 02116',
-    subtotal: 28.00,
+    customer_name: 'Vikramaditya Joshi',
+    customer_email: 'vjoshi@ecotech.in',
+    customer_address: '110 Defence Colony, New Delhi, DL 110024',
+    subtotal: 649,
     discount: 0,
-    total_amount: 28.00,
+    total_amount: 649,
     status: 'Processing',
     created_at: '2026-10-21 07:10',
     tracking_code: 'NG-PENDING-ALLOC',
@@ -410,7 +410,7 @@ export const INITIAL_ORDERS: Order[] = [
       {
         product_id: 'prod-001',
         product_name: '2-in-1 Papaya Leaf, Coconut Coir, & Honey Face Scrub',
-        price: 28.00,
+        price: 649,
         quantity: 1,
         sku: 'NG-SCRUB-001'
       }
@@ -425,8 +425,8 @@ export const INITIAL_RND_PROJECTS: RNDProject[] = [
     code_name: 'Project Obsidian Glow',
     stage: 'Microbial Stability Testing',
     progress_pct: 78,
-    allocated_budget: 35000,
-    spent_budget: 27400,
+    allocated_budget: 350000,
+    spent_budget: 274000,
     lead_scientist: 'Dr. Elena Vance (Lead Bio-Chemist)',
     target_launch: 'Q2 2027',
     waste_stream_used: 'Steam pyrolyzed coconut shells from coastal copra mills',
@@ -438,8 +438,8 @@ export const INITIAL_RND_PROJECTS: RNDProject[] = [
     code_name: 'Project Auroral Caffeine',
     stage: 'Bench Formulation',
     progress_pct: 46,
-    allocated_budget: 42000,
-    spent_budget: 18900,
+    allocated_budget: 420000,
+    spent_budget: 189000,
     lead_scientist: 'Tariq Al-Mansoor (Phyto-Formulation Lead)',
     target_launch: 'Q3 2027',
     waste_stream_used: 'Spent espresso grounds from artisanal cafe consortium',
@@ -451,8 +451,8 @@ export const INITIAL_RND_PROJECTS: RNDProject[] = [
     code_name: 'Project Tropical Slumber',
     stage: 'Safety & Clinical Patch',
     progress_pct: 32,
-    allocated_budget: 28000,
-    spent_budget: 9200,
+    allocated_budget: 280000,
+    spent_budget: 92000,
     lead_scientist: 'Dr. Aris Thorne',
     target_launch: 'Q4 2027',
     waste_stream_used: 'Discarded mango stones from industrial pulp canneries',
@@ -485,7 +485,7 @@ export const INITIAL_WASTE_LOGS: WasteCollectionLog[] = [
     id: 'wlog-003',
     waste_type: 'Spent Specialty Coffee Grounds',
     source_coop: 'UrbanRoast Specialty Coffee Collective',
-    location: 'Pacific Northwest Cafe Network',
+    location: 'Coorg & Bengaluru Cafe Network',
     quantity_kg: 310,
     collected_at: '2026-10-12',
     co2_offset_kg: 740,
@@ -495,7 +495,7 @@ export const INITIAL_WASTE_LOGS: WasteCollectionLog[] = [
     id: 'wlog-004',
     waste_type: 'Mango Cannery Kernel Stones',
     source_coop: 'Konkan Fruit Processors Cooperative',
-    location: 'Ratnagiri Belt',
+    location: 'Ratnagiri Belt, Maharashtra',
     quantity_kg: 260,
     collected_at: '2026-10-16',
     co2_offset_kg: 580,

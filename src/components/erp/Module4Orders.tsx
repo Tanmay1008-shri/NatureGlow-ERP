@@ -1,15 +1,9 @@
 import React, { useState } from 'react';
 import {
-  PackageCheck,
-  Truck,
   CheckCircle2,
-  Clock,
   Search,
-  Filter,
   FileText,
   X,
-  Printer,
-  ExternalLink,
   ChevronRight
 } from 'lucide-react';
 import { Order, OrderStatus } from '../../types';
@@ -53,14 +47,14 @@ export const Module4Orders: React.FC<Module4Props> = ({ orders, onUpdateOrderSta
             </span>
             <span className="text-xs text-zinc-400">•</span>
             <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">
-              Fulfillment Command Center
+              Fulfillment Command Center (₹ INR)
             </span>
           </div>
           <h2 className="text-2xl font-serif font-bold text-zinc-900 dark:text-white mt-1">
             Order Fulfillment & Logistics Lifecycle
           </h2>
           <p className="text-xs sm:text-sm text-zinc-500">
-            Dispatch multi-item shopping carts, manage packaging stages, and generate customer invoices.
+            Dispatch multi-item shopping carts, manage packaging stages, and generate customer GST/retail invoices.
           </p>
         </div>
 
@@ -114,7 +108,7 @@ export const Module4Orders: React.FC<Module4Props> = ({ orders, onUpdateOrderSta
                 <th className="p-3.5">Order Ref</th>
                 <th className="p-3.5">Customer & Destination</th>
                 <th className="p-3.5">Items Ordered</th>
-                <th className="p-3.5">Total Value</th>
+                <th className="p-3.5">Total Value (₹)</th>
                 <th className="p-3.5">Status</th>
                 <th className="p-3.5">Carrier Tracking</th>
                 <th className="p-3.5">Lifecycle Action</th>
@@ -157,7 +151,7 @@ export const Module4Orders: React.FC<Module4Props> = ({ orders, onUpdateOrderSta
                     </td>
 
                     <td className="p-3.5 font-mono font-bold text-zinc-900 dark:text-white">
-                      ${order.total_amount.toFixed(2)}
+                      ₹{order.total_amount.toLocaleString('en-IN')}
                     </td>
 
                     <td className="p-3.5">
@@ -208,7 +202,7 @@ export const Module4Orders: React.FC<Module4Props> = ({ orders, onUpdateOrderSta
           <div className="w-full max-w-lg bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-2xl border border-zinc-200 dark:border-zinc-800 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-zinc-200 dark:border-zinc-800">
               <div>
-                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">NatureGlow Enterprise Invoice</span>
+                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">NatureGlow Enterprise Invoice (₹ INR)</span>
                 <h3 className="font-serif font-bold text-lg text-zinc-900 dark:text-white">
                   {selectedInvoiceOrder.order_number}
                 </h3>
@@ -251,8 +245,8 @@ export const Module4Orders: React.FC<Module4Props> = ({ orders, onUpdateOrderSta
                     <tr key={idx}>
                       <td className="p-2.5 font-medium">{it.product_name}</td>
                       <td className="p-2.5 font-mono">{it.quantity}</td>
-                      <td className="p-2.5 font-mono">${it.price.toFixed(2)}</td>
-                      <td className="p-2.5 font-mono font-bold">${(it.price * it.quantity).toFixed(2)}</td>
+                      <td className="p-2.5 font-mono">₹{it.price.toLocaleString('en-IN')}</td>
+                      <td className="p-2.5 font-mono font-bold">₹{(it.price * it.quantity).toLocaleString('en-IN')}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -262,17 +256,17 @@ export const Module4Orders: React.FC<Module4Props> = ({ orders, onUpdateOrderSta
             <div className="space-y-1 text-xs pt-2">
               <div className="flex justify-between text-zinc-500">
                 <span>Subtotal:</span>
-                <span>${selectedInvoiceOrder.subtotal.toFixed(2)}</span>
+                <span>₹{selectedInvoiceOrder.subtotal.toLocaleString('en-IN')}</span>
               </div>
               {selectedInvoiceOrder.discount > 0 && (
                 <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
                   <span>Circularity Discount:</span>
-                  <span>-${selectedInvoiceOrder.discount.toFixed(2)}</span>
+                  <span>-₹{selectedInvoiceOrder.discount.toLocaleString('en-IN')}</span>
                 </div>
               )}
               <div className="flex justify-between font-bold text-sm text-zinc-900 dark:text-white border-t border-zinc-200 dark:border-zinc-800 pt-2">
                 <span>Total Amount:</span>
-                <span className="text-emerald-600 dark:text-emerald-400">${selectedInvoiceOrder.total_amount.toFixed(2)}</span>
+                <span className="text-emerald-600 dark:text-emerald-400">₹{selectedInvoiceOrder.total_amount.toLocaleString('en-IN')}</span>
               </div>
             </div>
 

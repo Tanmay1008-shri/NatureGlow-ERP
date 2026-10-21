@@ -1,0 +1,260 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 720" width="900" height="720">
+  <defs>
+    <!-- Studio Background Gradient -->
+    <radialGradient id="studioBg" cx="50%" cy="42%" r="65%" fx="38%" fy="30%">
+      <stop offset="0%" stop-color="#f6efe2" />
+      <stop offset="48%" stop-color="#e8dcc8" />
+      <stop offset="85%" stop-color="#cfc0a8" />
+      <stop offset="100%" stop-color="#b8a68c" />
+    </radialGradient>
+
+    <!-- Warm Sunbeam Glow -->
+    <radialGradient id="sunGlow" cx="30%" cy="25%" r="55%">
+      <stop offset="0%" stop-color="#fffbeb" stop-opacity="0.75" />
+      <stop offset="50%" stop-color="#fde68a" stop-opacity="0.22" />
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Travertine Stone Podium Top -->
+    <linearGradient id="podiumTop" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#efe6d8" />
+      <stop offset="50%" stop-color="#f8f3eb" />
+      <stop offset="100%" stop-color="#dfd3c0" />
+    </linearGradient>
+
+    <!-- Travertine Stone Podium Side -->
+    <linearGradient id="podiumSide" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#d5c6b0" />
+      <stop offset="35%" stop-color="#e5d9c7" />
+      <stop offset="75%" stop-color="#c4b39b" />
+      <stop offset="100%" stop-color="#a8967d" />
+    </linearGradient>
+
+    <!-- Contact Shadow -->
+    <radialGradient id="jarShadow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1c140d" stop-opacity="0.55" />
+      <stop offset="60%" stop-color="#2e2115" stop-opacity="0.28" />
+      <stop offset="100%" stop-color="#2e2115" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- UV Amber Glass Body -->
+    <linearGradient id="amberGlass" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#381805" />
+      <stop offset="12%" stop-color="#6e3009" />
+      <stop offset="26%" stop-color="#b45309" />
+      <stop offset="45%" stop-color="#7c2d12" />
+      <stop offset="72%" stop-color="#451a03" />
+      <stop offset="88%" stop-color="#78350f" />
+      <stop offset="100%" stop-color="#271002" />
+    </linearGradient>
+
+    <!-- Amber Inner Glow -->
+    <radialGradient id="amberInnerGlow" cx="42%" cy="55%" r="48%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.45" />
+      <stop offset="65%" stop-color="#b45309" stop-opacity="0.18" />
+      <stop offset="100%" stop-color="#451a03" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Walnut Wood Lid -->
+    <linearGradient id="walnutLid" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1e130c" />
+      <stop offset="18%" stop-color="#3d2719" />
+      <stop offset="35%" stop-color="#573a26" />
+      <stop offset="55%" stop-color="#332014" />
+      <stop offset="82%" stop-color="#24160e" />
+      <stop offset="100%" stop-color="#140c07" />
+    </linearGradient>
+
+    <!-- Gold Foil Accent -->
+    <linearGradient id="goldFoil" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#b48327" />
+      <stop offset="35%" stop-color="#f3d078" />
+      <stop offset="55%" stop-color="#c99738" />
+      <stop offset="80%" stop-color="#fae29c" />
+      <stop offset="100%" stop-color="#9a6b19" />
+    </linearGradient>
+
+    <!-- Cream Botanical Paper Label -->
+    <linearGradient id="creamLabel" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#dcd3c2" />
+      <stop offset="12%" stop-color="#f5efe4" />
+      <stop offset="32%" stop-color="#fdfbf7" />
+      <stop offset="68%" stop-color="#f7f2e8" />
+      <stop offset="88%" stop-color="#e5dccb" />
+      <stop offset="100%" stop-color="#cdc2ae" />
+    </linearGradient>
+
+    <!-- Papaya Leaf Gradient -->
+    <linearGradient id="papayaLeaf" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#15803d" />
+      <stop offset="55%" stop-color="#065f46" />
+      <stop offset="100%" stop-color="#042f2e" />
+    </linearGradient>
+
+    <!-- Golden Honey Droplet -->
+    <radialGradient id="honeyDrop" cx="35%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="40%" stop-color="#f59e0b" />
+      <stop offset="85%" stop-color="#b45309" />
+      <stop offset="100%" stop-color="#78350f" />
+    </radialGradient>
+
+    <!-- Coconut Coir Mound -->
+    <radialGradient id="coirTexture" cx="45%" cy="38%" r="60%">
+      <stop offset="0%" stop-color="#9a5825" />
+      <stop offset="55%" stop-color="#6b3710" />
+      <stop offset="100%" stop-color="#3e1d06" />
+    </radialGradient>
+
+    <filter id="softBlur" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" />
+    </filter>
+    <filter id="dropShadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#271709" flood-opacity="0.32" />
+    </filter>
+  </defs>
+
+  <!-- 1. Studio Wall & Sunlit Atmosphere -->
+  <rect width="900" height="720" fill="url(#studioBg)" />
+  <circle cx="280" cy="180" r="420" fill="url(#sunGlow)" />
+
+  <!-- Subtle Botanical Dappled Shadow on Studio Wall -->
+  <g opacity="0.07" fill="#1e2923" filter="url(#softBlur)">
+    <ellipse cx="720" cy="140" rx="180" ry="42" transform="rotate(-28 720 140)" />
+    <ellipse cx="760" cy="210" rx="160" ry="36" transform="rotate(-15 760 210)" />
+    <ellipse cx="680" cy="80" rx="140" ry="30" transform="rotate(-40 680 80)" />
+  </g>
+
+  <!-- Studio Floor Horizon -->
+  <path d="M0 530 Q450 515 900 530 L900 720 L0 720 Z" fill="#d5c5ae" opacity="0.65" />
+
+  <!-- 2. Background Tropical Papaya Leaf (Left Behind Podium) -->
+  <g transform="translate(135, 195) rotate(-18)">
+    <!-- Leaf Lobes -->
+    <path d="M120 260 C55 210 10 130 25 55 C55 85 95 130 120 185 C110 110 115 35 145 0 C168 45 170 115 152 185 C185 125 230 85 268 70 C258 140 210 210 140 262 Z" fill="url(#papayaLeaf)" filter="url(#dropShadow)" />
+    <!-- Leaf Veins -->
+    <path d="M132 258 L144 18 M126 215 L35 68 M142 212 L255 82 M135 155 L105 95 M144 145 L182 95" stroke="#6ee7b7" stroke-width="1.8" stroke-linecap="round" opacity="0.45" fill="none" />
+  </g>
+
+  <!-- Background Papaya Leaf Frond (Right Behind Jar) -->
+  <g transform="translate(555, 225) rotate(24) scale(0.88)">
+    <path d="M120 260 C55 210 10 130 25 55 C55 85 95 130 120 185 C110 110 115 35 145 0 C168 45 170 115 152 185 C185 125 230 85 268 70 C258 140 210 210 140 262 Z" fill="url(#papayaLeaf)" opacity="0.92" />
+    <path d="M132 258 L144 18 M126 215 L35 68 M142 212 L255 82" stroke="#a7f3d0" stroke-width="1.6" stroke-linecap="round" opacity="0.4" fill="none" />
+  </g>
+
+  <!-- 3. Travertine Stone Display Podium -->
+  <g transform="translate(0, 15)">
+    <!-- Podium Drop Shadow -->
+    <ellipse cx="450" cy="605" rx="315" ry="44" fill="url(#jarShadow)" />
+    <!-- Podium Cylinder Base -->
+    <path d="M165 515 L165 572 A285 38 0 0 0 735 572 L735 515 Z" fill="url(#podiumSide)" />
+    <!-- Podium Top Surface -->
+    <ellipse cx="450" cy="515" rx="285" ry="38" fill="url(#podiumTop)" stroke="#e7dec8" stroke-width="1.5" />
+  </g>
+
+  <!-- 4. Foreground Raw Upcycled Ingredients on Stone Podium -->
+  <!-- Left: Upcycled Coconut Coir & Husk Fibers -->
+  <g transform="translate(190, 465)">
+    <ellipse cx="75" cy="72" rx="72" ry="18" fill="#2a180a" opacity="0.35" />
+    <path d="M12 68 Q35 22 76 28 Q118 24 138 68 Q75 84 12 68 Z" fill="url(#coirTexture)" />
+    <!-- Micronized Coir Specks & Husk Strands -->
+    <g stroke="#b46934" stroke-width="1.6" fill="none" opacity="0.75" stroke-linecap="round">
+      <path d="M22 58 Q48 35 82 44" />
+      <path d="M40 65 Q78 42 118 56" />
+      <path d="M52 38 Q85 28 112 46" />
+      <path d="M18 66 Q45 52 72 64" />
+    </g>
+    <!-- Loose Coir Granules -->
+    <g fill="#5c2d0c" opacity="0.85">
+      <circle cx="8" cy="72" r="2.2" />
+      <circle cx="15" cy="76" r="1.8" />
+      <circle cx="142" cy="71" r="2.5" />
+      <circle cx="132" cy="77" r="1.7" />
+      <circle cx="95" cy="78" r="2" />
+      <circle cx="58" cy="79" r="2.4" />
+    </g>
+  </g>
+
+  <!-- Right: Golden Raw Wildflower Honey Pool & Droplets -->
+  <g transform="translate(565, 488)">
+    <!-- Honey Pool -->
+    <ellipse cx="78" cy="48" rx="64" ry="16" fill="url(#honeyDrop)" opacity="0.92" />
+    <ellipse cx="65" cy="44" rx="35" ry="7" fill="#fef9c3" opacity="0.45" />
+    <!-- Honey Droplet Pearls -->
+    <circle cx="152" cy="54" r="9" fill="url(#honeyDrop)" />
+    <circle cx="149" cy="51" r="3" fill="#fffbeb" opacity="0.8" />
+    <circle cx="170" cy="61" r="5.5" fill="url(#honeyDrop)" />
+    <circle cx="168" cy="59" r="1.8" fill="#fffbeb" opacity="0.8" />
+  </g>
+
+  <!-- 5. Main Flagship Product: 100ml UV Amber Glass Scrub Jar -->
+  <g transform="translate(0, 8)">
+    <!-- Jar Contact Shadow on Podium -->
+    <ellipse cx="450" cy="518" rx="154" ry="26" fill="url(#jarShadow)" />
+
+    <!-- Amber Glass Jar Body -->
+    <rect x="312" y="232" width="276" height="278" rx="36" fill="url(#amberGlass)" filter="url(#dropShadow)" />
+    <!-- Inner Amber Illumination -->
+    <rect x="320" y="240" width="260" height="262" rx="30" fill="url(#amberInnerGlow)" />
+
+    <!-- Amber Glass Shoulder & Base Rim Highlights -->
+    <path d="M324 248 Q450 258 576 248" stroke="#f59e0b" stroke-width="2.5" fill="none" opacity="0.5" />
+    <path d="M330 498 Q450 510 570 498" stroke="#fbbf24" stroke-width="3" fill="none" opacity="0.55" />
+
+    <!-- Left Glass Specular Highlight Strip -->
+    <rect x="328" y="245" width="16" height="245" rx="8" fill="#fffbeb" opacity="0.22" />
+    <rect x="350" y="252" width="5" height="232" rx="2.5" fill="#fffbeb" opacity="0.12" />
+    <!-- Right Glass Rim Highlight -->
+    <rect x="562" y="248" width="10" height="240" rx="5" fill="#fde68a" opacity="0.16" />
+
+    <!--Jar Neck Shadow -->
+    <rect x="334" y="220" width="232" height="18" rx="6" fill="#1c0a00" />
+
+    <!-- Dark Walnut Wood Screw Lid -->
+    <rect x="322" y="162" width="256" height="64" rx="14" fill="url(#walnutLid)" />
+    <!-- Lid Top Bevel Highlight -->
+    <path d="M334 166 L566 166" stroke="#85583a" stroke-width="2.5" stroke-linecap="round" opacity="0.75" />
+    <!-- Subtle Wood Grain Lines on Lid -->
+    <path d="M326 184 Q450 190 574 184" stroke="#120a06" stroke-width="1.5" fill="none" opacity="0.55" />
+    <path d="M326 204 Q450 210 574 204" stroke="#4a301e" stroke-width="1.2" fill="none" opacity="0.45" />
+    <!-- Lid Left Specular -->
+    <rect x="334" y="168" width="18" height="52" rx="6" fill="#ffffff" opacity="0.1" />
+    <!-- Gold Metallic Neck Collar Band -->
+    <rect x="326" y="223" width="248" height="7" rx="2" fill="url(#goldFoil)" />
+
+    <!-- 6. Textured Recycled Botanical Cream Wrap Label -->
+    <rect x="316" y="274" width="268" height="196" rx="8" fill="url(#creamLabel)" />
+    <!-- Gold Foil Top & Bottom Label Borders -->
+    <rect x="316" y="274" width="268" height="4" fill="url(#goldFoil)" />
+    <rect x="316" y="466" width="268" height="4" fill="url(#goldFoil)" />
+
+    <!-- Inner Thin Botanical Frame -->
+    <rect x="328" y="284" width="244" height="176" rx="4" fill="none" stroke="#065f46" stroke-width="1" stroke-opacity="0.3" />
+
+    <!-- Brand Header on Label -->
+    <text x="450" y="306" text-anchor="middle" font-family="Georgia, 'Playfair Display', serif" font-size="19" font-weight="700" fill="#064e3b" letter-spacing="3.5">NATUREGLOW</text>
+    <text x="450" y="319" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="7.5" font-weight="700" fill="#b45309" letter-spacing="2.2">UPCYCLED BOTANICAL APOTHECARY</text>
+
+    <!-- Gold Divider Line with Leaf Motif -->
+    <line x1="365" y1="328" x2="436" y2="328" stroke="#d97706" stroke-width="1" opacity="0.6" />
+    <circle cx="450" cy="328" r="3" fill="#059669" />
+    <line x1="464" y1="328" x2="535" y2="328" stroke="#d97706" stroke-width="1" opacity="0.6" />
+
+    <!-- Product Name on Label -->
+    <text x="450" y="349" text-anchor="middle" font-family="Georgia, 'Playfair Display', serif" font-size="15.5" font-weight="700" fill="#1c1917">2-in-1 Papaya Leaf,</text>
+    <text x="450" y="369" text-anchor="middle" font-family="Georgia, 'Playfair Display', serif" font-size="15.5" font-weight="700" fill="#1c1917">Coconut Coir &amp; Honey</text>
+    <text x="450" y="388" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10.5" font-weight="700" fill="#047857" letter-spacing="2.5">EXFOLIATING FACE SCRUB</text>
+
+    <!-- Active Bio-Compounds Pill Strip -->
+    <rect x="348" y="399" width="204" height="20" rx="10" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="1" />
+    <text x="450" y="412.5" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="8.2" font-weight="600" fill="#065f46" letter-spacing="0.5">60µm Micronized Coir • Papain • Raw Honey</text>
+
+    <!-- Net Weight & Batch Metadata on Label Footer -->
+    <text x="450" y="437" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="8.5" font-weight="600" fill="#57534e" letter-spacing="1.2">100 ML / 3.4 FL. OZ.  •  UV AMBER GLASS</text>
+    <text x="450" y="451" text-anchor="middle" font-family=" monospace" font-size="7.5" font-weight="600" fill="#78716c" letter-spacing="1">BATCH #NG-2025-089 • 100% MICROPLASTIC-FREE</text>
+
+    <!-- Label Cylindrical Shading Overlay (Left & Right curve realism) -->
+    <rect x="316" y="274" width="26" height="196" fill="#ffffff" opacity="0.16" />
+    <rect x="554" y="274" width="30" height="196" fill="#291d12" opacity="0.12" />
+  </g>
+</svg>

@@ -1,16 +1,23 @@
 import React from 'react';
-import { Sparkles, ArrowRight, ShieldCheck, Leaf, Recycle, Award } from 'lucide-react';
+import { Sparkles, ArrowRight, ShieldCheck, Leaf, Recycle, Award, Pencil } from 'lucide-react';
+import { Product, UserRole } from '../../types';
 
 interface HeroBannerProps {
+  flagshipProduct: Product;
+  userRole: UserRole;
   onExploreProduct: () => void;
   onExploreCoir: () => void;
   onGoToERP: () => void;
+  onEditFlagship: (product: Product) => void;
 }
 
 export const HeroBanner: React.FC<HeroBannerProps> = ({
+  flagshipProduct,
+  userRole,
   onExploreProduct,
   onExploreCoir,
-  onGoToERP
+  onGoToERP,
+  onEditFlagship
 }) => {
   return (
     <div className="relative overflow-hidden bg-gradient-to-b from-emerald-950 via-emerald-900 to-zinc-900 text-white py-16 sm:py-24 border-b border-emerald-800/40">
@@ -41,7 +48,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                 onClick={onExploreProduct}
                 className="flex items-center space-x-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-zinc-950 font-bold text-sm shadow-lg shadow-emerald-500/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
               >
-                <span>Shop Flagship Scrub ($28)</span>
+                <span>Shop Flagship Scrub (₹{flagshipProduct.price.toLocaleString('en-IN')})</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
@@ -93,26 +100,40 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             <div className="relative rounded-3xl overflow-hidden bg-gradient-to-tr from-emerald-900/60 to-zinc-800/80 border border-emerald-500/30 p-4 shadow-2xl backdrop-blur-sm">
               <div className="relative aspect-4/3 rounded-2xl overflow-hidden group">
                 <img
-                  src="https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=800&q=80"
-                  alt="NatureGlow 2-in-1 Papaya Leaf Coconut Coir Honey Face Scrub"
+                  src={flagshipProduct.image}
+                  alt={flagshipProduct.name}
+                  referrerPolicy="no-referrer"
                   className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent" />
 
                 {/* Live Badge */}
-                <div className="absolute top-3 left-3 bg-emerald-500/90 text-zinc-950 px-3 py-1 rounded-full text-xs font-bold flex items-center space-x-1 shadow-md">
+                <div className="absolute top-3 left-3 bg-emerald-500/95 text-zinc-950 px-3 py-1 rounded-full text-xs font-bold flex items-center space-x-1 shadow-md">
                   <span className="w-2 h-2 rounded-full bg-emerald-950 animate-ping mr-1" />
                   <span>Live Flagship Proof-of-Concept</span>
                 </div>
 
+                {/* Quick Admin Edit Button on Flagship */}
+                {userRole === 'admin' && (
+                  <button
+                    onClick={() => onEditFlagship(flagshipProduct)}
+                    className="absolute top-3 right-3 bg-zinc-900/90 hover:bg-amber-500 text-amber-300 hover:text-zinc-950 border border-amber-400/50 px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center space-x-1 shadow-md transition-colors cursor-pointer"
+                  >
+                    <Pencil className="w-3 h-3" />
+                    <span>Edit Photo / ₹ Price</span>
+                  </button>
+                )}
+
                 {/* Overlaid quick details */}
                 <div className="absolute bottom-3 left-3 right-3 text-left">
                   <h3 className="text-lg font-bold font-serif text-white">
-                    2-in-1 Papaya Leaf, Coconut Coir, & Honey Face Scrub
+                    {flagshipProduct.name}
                   </h3>
                   <div className="flex items-center justify-between mt-1 text-xs text-emerald-200">
-                    <span>100ml / 3.4 fl oz UV Amber Glass</span>
-                    <span className="font-bold text-amber-300 text-sm">$28.00 USD</span>
+                    <span>{flagshipProduct.size} UV Amber Glass</span>
+                    <span className="font-bold text-amber-300 text-sm">
+                      ₹{flagshipProduct.price.toLocaleString('en-IN')} INR
+                    </span>
                   </div>
                 </div>
               </div>

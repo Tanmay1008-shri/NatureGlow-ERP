@@ -1,14 +1,8 @@
 import React, { useState } from 'react';
 import {
-  DollarSign,
-  TrendingUp,
-  Percent,
+  IndianRupee,
   FlaskConical,
-  Plus,
-  Layers,
-  PieChart,
-  ShieldCheck,
-  CheckCircle2
+  Plus
 } from 'lucide-react';
 import { Product, FormulationRecipeItem, RawMaterial, RNDProject, Order } from '../../types';
 import { calculateCOGS } from '../../utils/businessLogic';
@@ -30,16 +24,16 @@ export const Module5Financials: React.FC<Module5Props> = ({
   orders,
   onAddRNDBudget
 }) => {
-  const [selectedProductId, setSelectedProductId] = useState<string>('prod-001');
-  const [laborCost, setLaborCost] = useState<number>(2.20);
+  const [selectedProductId, setSelectedProductId] = useState<string>(products[0]?.id || 'prod-001');
+  const [laborCost, setLaborCost] = useState<number>(45);
   const [budgetModalOpen, setBudgetModalOpen] = useState(false);
   const [selectedRNDId, setSelectedRNDId] = useState<string>(rndProjects[0]?.id || '');
-  const [additionalBudget, setAdditionalBudget] = useState<number>(5000);
+  const [additionalBudget, setAdditionalBudget] = useState<number>(50000);
 
   const selectedProduct = products.find((p) => p.id === selectedProductId) || products[0];
-  const productRecipe = recipes.filter((r) => r.product_id === selectedProductId);
+  const productRecipe = recipes.filter((r) => r.product_id === selectedProduct.id);
 
-  // Dynamic COGS calculation
+  // Dynamic COGS calculation in INR
   const cogsBreakdown = calculateCOGS(
     productRecipe,
     materials,
@@ -69,14 +63,14 @@ export const Module5Financials: React.FC<Module5Props> = ({
             </span>
             <span className="text-xs text-zinc-400">•</span>
             <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">
-              Unit Economics & R&D
+              Unit Economics & R&D (₹ INR)
             </span>
           </div>
           <h2 className="text-2xl font-serif font-bold text-zinc-900 dark:text-white mt-1">
             Scalable Financials & COGS Margin Analysis
           </h2>
           <p className="text-xs sm:text-sm text-zinc-500">
-            Cost-of-Goods-Sold engine, contribution margin modeling, and multi-product R&D capital expenditure.
+            Cost-of-Goods-Sold engine, contribution margin modeling, and multi-product R&D capital expenditure in ₹ INR.
           </p>
         </div>
 
@@ -85,7 +79,7 @@ export const Module5Financials: React.FC<Module5Props> = ({
           className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs shadow-xs transition-colors self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5" />
-          <span>Allocate R&D Capital</span>
+          <span>Allocate R&D Capital (₹)</span>
         </button>
       </div>
 
@@ -93,13 +87,13 @@ export const Module5Financials: React.FC<Module5Props> = ({
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xs">
           <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
-            Flagship Gross Margin
+            Selected SKU Gross Margin
           </span>
           <div className="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-2">
             {cogsBreakdown.grossMarginPct}%
           </div>
           <div className="text-xs text-zinc-500 mt-1">
-            Retail ${cogsBreakdown.retailPrice.toFixed(2)} vs COGS ${cogsBreakdown.totalCOGS.toFixed(2)}
+            Retail ₹{cogsBreakdown.retailPrice.toLocaleString('en-IN')} vs COGS ₹{cogsBreakdown.totalCOGS.toFixed(2)}
           </div>
         </div>
 
@@ -108,10 +102,10 @@ export const Module5Financials: React.FC<Module5Props> = ({
             Total R&D Investment
           </span>
           <div className="text-3xl font-extrabold text-amber-600 dark:text-amber-400 mt-2">
-            ${totalRNDSpent.toLocaleString()}
+            ₹{totalRNDSpent.toLocaleString('en-IN')}
           </div>
           <div className="text-xs text-zinc-500 mt-1">
-            Out of ${totalRNDAllocated.toLocaleString()} allocated across 3 pipeline tracks
+            Out of ₹{totalRNDAllocated.toLocaleString('en-IN')} allocated across 3 pipeline tracks
           </div>
         </div>
 
@@ -120,7 +114,7 @@ export const Module5Financials: React.FC<Module5Props> = ({
             Gross Commercial Revenue
           </span>
           <div className="text-3xl font-extrabold text-zinc-900 dark:text-white mt-2">
-            ${totalCommercialRevenue.toFixed(2)}
+            ₹{totalCommercialRevenue.toLocaleString('en-IN')}
           </div>
           <div className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-1">
             100% self-funded pipeline growth
@@ -133,9 +127,9 @@ export const Module5Financials: React.FC<Module5Props> = ({
         {/* Left: Product Selector & Variable Controls */}
         <div className="lg:col-span-5 bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-800 shadow-xs space-y-4">
           <div className="flex items-center space-x-2 text-emerald-600">
-            <DollarSign className="w-5 h-5" />
+            <IndianRupee className="w-5 h-5" />
             <h3 className="font-serif font-bold text-base text-zinc-900 dark:text-white">
-              COGS Unit Cost Calculator
+              COGS Unit Cost Calculator (₹ INR)
             </h3>
           </div>
 
@@ -144,13 +138,13 @@ export const Module5Financials: React.FC<Module5Props> = ({
               Select Product SKU
             </label>
             <select
-              value={selectedProductId}
+              value={selectedProduct.id}
               onChange={(e) => setSelectedProductId(e.target.value)}
               className="w-full px-3 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs text-zinc-900 dark:text-white"
             >
               {products.map((p) => (
                 <option key={p.id} value={p.id}>
-                  {p.name} (${p.price.toFixed(2)})
+                  {p.name} (₹{p.price.toLocaleString('en-IN')})
                 </option>
               ))}
             </select>
@@ -162,14 +156,14 @@ export const Module5Financials: React.FC<Module5Props> = ({
                 Labor & Cleanroom Facility Cost / Unit
               </label>
               <span className="text-xs font-bold text-emerald-600 font-mono">
-                ${laborCost.toFixed(2)}
+                ₹{laborCost.toFixed(2)}
               </span>
             </div>
             <input
               type="range"
-              min="1.00"
-              max="6.00"
-              step="0.10"
+              min="20"
+              max="150"
+              step="5"
               value={laborCost}
               onChange={(e) => setLaborCost(Number(e.target.value))}
               className="w-full accent-emerald-600 cursor-pointer"
@@ -179,23 +173,23 @@ export const Module5Financials: React.FC<Module5Props> = ({
           <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 space-y-2 text-xs">
             <div className="flex justify-between">
               <span className="text-zinc-500">Raw Bio-Ingredients:</span>
-              <span className="font-mono font-bold">${cogsBreakdown.rawIngredientsCost.toFixed(2)}</span>
+              <span className="font-mono font-bold">₹{cogsBreakdown.rawIngredientsCost.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-zinc-500">Circular Packaging (Glass/Lid):</span>
-              <span className="font-mono font-bold">${cogsBreakdown.packagingCost.toFixed(2)}</span>
+              <span className="font-mono font-bold">₹{cogsBreakdown.packagingCost.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-zinc-500">Labor & Facility Overhead:</span>
-              <span className="font-mono font-bold">${cogsBreakdown.laborAndFacilityCost.toFixed(2)}</span>
+              <span className="font-mono font-bold">₹{cogsBreakdown.laborAndFacilityCost.toFixed(2)}</span>
             </div>
             <div className="flex justify-between font-bold border-t border-zinc-200 dark:border-zinc-700 pt-2 text-sm text-zinc-900 dark:text-white">
               <span>Total Unit COGS:</span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-mono">${cogsBreakdown.totalCOGS.toFixed(2)}</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-mono">₹{cogsBreakdown.totalCOGS.toFixed(2)}</span>
             </div>
             <div className="flex justify-between font-bold text-xs text-emerald-600">
               <span>Unit Gross Profit:</span>
-              <span className="font-mono">+${cogsBreakdown.grossProfit.toFixed(2)}</span>
+              <span className="font-mono">+₹{cogsBreakdown.grossProfit.toFixed(2)}</span>
             </div>
           </div>
         </div>
@@ -234,7 +228,7 @@ export const Module5Financials: React.FC<Module5Props> = ({
                   {/* Progress bar for spend */}
                   <div className="space-y-1">
                     <div className="flex justify-between text-[11px] text-zinc-500">
-                      <span>Budget Spent: ${proj.spent_budget.toLocaleString()} / ${proj.allocated_budget.toLocaleString()}</span>
+                      <span>Budget Spent: ₹{proj.spent_budget.toLocaleString('en-IN')} / ₹{proj.allocated_budget.toLocaleString('en-IN')}</span>
                       <span className="font-bold">{spendRatio}% Burn</span>
                     </div>
                     <div className="w-full h-2 rounded-full bg-zinc-200 dark:bg-zinc-700 overflow-hidden">
@@ -260,7 +254,7 @@ export const Module5Financials: React.FC<Module5Props> = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
           <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-2xl border border-zinc-200 dark:border-zinc-800">
             <h3 className="font-serif font-bold text-lg text-zinc-900 dark:text-white mb-1">
-              Allocate Additional R&D Capital
+              Allocate Additional R&D Capital (₹ INR)
             </h3>
             <p className="text-xs text-zinc-500 mb-4">
               Expand funding for microbial challenge assays or clinical patch tests.
@@ -286,12 +280,12 @@ export const Module5Financials: React.FC<Module5Props> = ({
 
               <div>
                 <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">
-                  Additional Budget Allocation ($ USD)
+                  Additional Budget Allocation (₹ INR)
                 </label>
                 <input
                   type="number"
-                  min="1000"
-                  step="500"
+                  min="10000"
+                  step="5000"
                   required
                   value={additionalBudget}
                   onChange={(e) => setAdditionalBudget(Number(e.target.value))}

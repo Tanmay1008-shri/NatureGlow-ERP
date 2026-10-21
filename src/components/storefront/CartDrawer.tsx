@@ -38,9 +38,9 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
 
   // Form states
-  const [name, setName] = useState('Sophia Montgomery');
-  const [email, setEmail] = useState('sophia.m@gmail.com');
-  const [address, setAddress] = useState('442 Kensington Way, Seattle, WA 98101');
+  const [name, setName] = useState('Ananya Deshmukh');
+  const [email, setEmail] = useState('ananya.d@gmail.com');
+  const [address, setAddress] = useState('402 Koregaon Park, Lane 7, Pune, MH 411001');
 
   if (!isOpen) return null;
 
@@ -49,9 +49,9 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
     0
   );
 
-  const discountAmount = Number(((subtotal * discountPct) / 100).toFixed(2));
-  const shippingAmount = subtotal > 35 || subtotal === 0 ? 0 : 4.99;
-  const grandTotal = Number((subtotal - discountAmount + shippingAmount).toFixed(2));
+  const discountAmount = Math.round((subtotal * discountPct) / 100);
+  const shippingAmount = subtotal >= 999 || subtotal === 0 ? 0 : 79;
+  const grandTotal = Math.round(subtotal - discountAmount + shippingAmount);
 
   const handleApplyPromo = () => {
     if (promoCode.trim().toUpperCase() === 'GLOW20') {
@@ -70,7 +70,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
     if (cartItems.length === 0) return;
 
     const orderNumber = `ORD-2026-${Math.floor(1000 + Math.random() * 9000)}`;
-    const trackingCode = `NG-FEDEX-${Math.floor(100000 + Math.random() * 900000)}`;
+    const trackingCode = `NG-BLUEDART-${Math.floor(100000 + Math.random() * 900000)}`;
 
     const newOrder: Order = {
       id: `ord-${Date.now()}`,
@@ -106,7 +106,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
           <div className="flex items-center space-x-2">
             <ShoppingBag className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             <h3 className="font-serif font-bold text-lg text-zinc-900 dark:text-white">
-              {completedOrder ? 'Order Confirmed' : isCheckingOut ? 'Express Checkout' : 'Your Shopping Bag'}
+              {completedOrder ? 'Order Confirmed' : isCheckingOut ? 'Express Checkout (₹ INR)' : 'Your Shopping Bag'}
             </h3>
           </div>
           <button
@@ -154,7 +154,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 </div>
                 <div className="flex justify-between font-bold border-t border-zinc-200 dark:border-zinc-700 pt-2 text-sm">
                   <span>Total Paid:</span>
-                  <span className="text-emerald-700 dark:text-emerald-300">${completedOrder.total_amount.toFixed(2)}</span>
+                  <span className="text-emerald-700 dark:text-emerald-300">₹{completedOrder.total_amount.toLocaleString('en-IN')}</span>
                 </div>
               </div>
 
@@ -179,7 +179,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
             /* Checkout Form */
             <form onSubmit={handleProcessOrder} className="space-y-4">
               <div className="bg-emerald-50 dark:bg-emerald-950/40 p-3 rounded-xl border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-800 dark:text-emerald-300">
-                🌱 Order summary: {cartItems.length} item(s) • Total: <strong>${grandTotal.toFixed(2)}</strong>
+                🌱 Order summary: {cartItems.length} item(s) • Total: <strong>₹{grandTotal.toLocaleString('en-IN')}</strong>
               </div>
 
               <div>
@@ -228,7 +228,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="p-3 border-2 border-emerald-500 rounded-xl bg-emerald-50/50 dark:bg-emerald-950/30 text-emerald-900 dark:text-emerald-200 font-semibold flex items-center space-x-2">
                     <CreditCard className="w-4 h-4 text-emerald-600" />
-                    <span>Card (Test Mode)</span>
+                    <span>UPI / Card (Test)</span>
                   </div>
                   <div className="p-3 border border-zinc-300 dark:border-zinc-700 rounded-xl opacity-60 text-zinc-500 flex items-center space-x-2">
                     <span>EcoWallet (5% Back)</span>
@@ -248,7 +248,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   type="submit"
                   className="w-2/3 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition-colors"
                 >
-                  Complete Order (${grandTotal.toFixed(2)})
+                  Complete Order (₹{grandTotal.toLocaleString('en-IN')})
                 </button>
               </div>
             </form>
@@ -276,6 +276,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   <img
                     src={item.product.image}
                     alt={item.product.name}
+                    referrerPolicy="no-referrer"
                     className="w-16 h-16 rounded-xl object-cover shrink-0"
                   />
                   <div className="flex-1 min-w-0 flex flex-col justify-between">
@@ -293,7 +294,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                         </button>
                       </div>
                       <div className="text-[11px] text-zinc-500">
-                        ${item.product.price.toFixed(2)} each
+                        ₹{item.product.price.toLocaleString('en-IN')} each
                       </div>
                     </div>
 
@@ -320,7 +321,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       </div>
 
                       <span className="text-xs font-bold text-zinc-900 dark:text-white">
-                        ${(item.product.price * item.quantity).toFixed(2)}
+                        ₹{(item.product.price * item.quantity).toLocaleString('en-IN')}
                       </span>
                     </div>
                   </div>
@@ -366,24 +367,24 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
             <div className="space-y-1.5 text-xs">
               <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
                 <span>Subtotal</span>
-                <span className="font-semibold text-zinc-900 dark:text-white">${subtotal.toFixed(2)}</span>
+                <span className="font-semibold text-zinc-900 dark:text-white">₹{subtotal.toLocaleString('en-IN')}</span>
               </div>
 
               {discountAmount > 0 && (
                 <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
                   <span>Circular Promo ({discountPct}%)</span>
-                  <span>-${discountAmount.toFixed(2)}</span>
+                  <span>-₹{discountAmount.toLocaleString('en-IN')}</span>
                 </div>
               )}
 
               <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
                 <span>Carbon-Neutral Shipping</span>
-                <span>{shippingAmount === 0 ? 'FREE (Orders > $35)' : `$${shippingAmount.toFixed(2)}`}</span>
+                <span>{shippingAmount === 0 ? 'FREE (Orders ≥ ₹999)' : `₹${shippingAmount}`}</span>
               </div>
 
               <div className="flex justify-between font-bold text-sm text-zinc-900 dark:text-white border-t border-zinc-200 dark:border-zinc-700 pt-2">
                 <span>Estimated Total</span>
-                <span className="text-emerald-700 dark:text-emerald-300 text-base">${grandTotal.toFixed(2)}</span>
+                <span className="text-emerald-700 dark:text-emerald-300 text-base">₹{grandTotal.toLocaleString('en-IN')}</span>
               </div>
             </div>
 
@@ -397,7 +398,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
             <div className="flex items-center justify-center space-x-1.5 text-[11px] text-zinc-500">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Simulated payment test mode enabled</span>
+              <span>Simulated UPI / Card test mode enabled</span>
             </div>
           </div>
         )}

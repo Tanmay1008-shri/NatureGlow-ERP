@@ -5,6 +5,7 @@ import { ProductCatalog } from './components/storefront/ProductCatalog';
 import { CoirInnovation } from './components/storefront/CoirInnovation';
 import { ReviewsSection } from './components/storefront/ReviewsSection';
 import { CartDrawer } from './components/storefront/CartDrawer';
+import { AdminProductEditorModal } from './components/AdminProductEditorModal';
 import { ERPContainer } from './components/erp/ERPContainer';
 import { Footer } from './components/Footer';
 
@@ -35,6 +36,9 @@ import {
 
 import { deductMaterialsForBatch } from './utils/businessLogic';
 
+const PRODUCTS_STORAGE_KEY = 'natureglow_products_inr_v3';
+const RECIPES_STORAGE_KEY = 'natureglow_recipes_inr_v3';
+
 export default function App() {
   // Dark mode state
   const [darkMode, setDarkMode] = useState<boolean>(() => {
@@ -61,24 +65,154 @@ export default function App() {
   const [activeERPModule, setActiveERPModule] = useState<number>(1);
   const [userRole, setUserRole] = useState<UserRole>('admin');
 
-  // Business state
-  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  // Business state (with localStorage persistence for products & recipes)
+  const [products, setProducts] = useState<Product[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem(PRODUCTS_STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch {
+        // Fallback to seed data
+      }
+    }
+    return INITIAL_PRODUCTS;
+  });
+
+  const [recipes, setRecipes] = useState<FormulationRecipeItem[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem(RECIPES_STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch {
+        // Fallback to seed data
+      }
+    }
+    return INITIAL_RECIPES;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(PRODUCTS_STORAGE_KEY, JSON.stringify(products));
+    } catch {
+      // Ignore quota errors on large base64 images
+    }
+  }, [products]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(RECIPES_STORAGE_KEY, JSON.stringify(recipes));
+    } catch {
+      // Ignore storage errors
+    }
+  }, [recipes]);
+
   const [materials, setMaterials] = useState<RawMaterial[]>(INITIAL_RAW_MATERIALS);
-  const [recipes] = useState<FormulationRecipeItem[]>(INITIAL_RECIPES);
   const [batches, setBatches] = useState<Batch[]>(INITIAL_BATCHES);
   const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
   const [rndProjects, setRndProjects] = useState<RNDProject[]>(INITIAL_RND_PROJECTS);
   const [wasteLogs, setWasteLogs] = useState<WasteCollectionLog[]>(INITIAL_WASTE_LOGS);
   const [reviews, setReviews] = useState<Review[]>(INITIAL_REVIEWS);
 
+  // Admin Product Editor Modal state
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [editorMode, setEditorMode] = useState<'edit' | 'create'>('edit');
+  const [productToEdit, setProductToEdit] = useState<Product | null>(null);
+
   // Cart state
-  const [cartItems, setCartItems] = useState<CartItem[]>([
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => [
     {
-      product: INITIAL_PRODUCTS[0],
+      product: products[0] || INITIAL_PRODUCTS[0],
       quantity: 1
     }
   ]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+
+  // Admin Product CRUD Handlers
+  const handleOpenEditProduct = (product: Product) => {
+    setProductToEdit(product);
+    setEditorMode('edit');
+    setIsEditorOpen(true);
+  };
+
+  const handleOpenCreateProduct = () => {
+    setProductToEdit(null);
+    setEditorMode('create');
+    setIsEditorOpen(true);
+  };
+
+  const handleSaveProduct = (updatedProduct: Product, isNew: boolean) => {
+    if (isNew) {
+      setProducts((prev) => [...prev, updatedProduct]);
+      // Create default formulation recipe for ERP Module 3 & Module 5 compatibility
+      const newRecipes: FormulationRecipeItem[] = [
+        {
+          id: `rec-${Date.now()}-1`,
+          product_id: updatedProduct.id,
+          raw_material_id: 'mat-001',
+          required_amount_per_unit: 20,
+          notes: '20g micronized coir base'
+        },
+        {
+          id: `rec-${Date.now()}-2`,
+          product_id: updatedProduct.id,
+          raw_material_id: 'mat-003',
+          required_amount_per_unit: 25,
+          notes: '25g organic honey active'
+        },
+        {
+          id: `rec-${Date.now()}-3`,
+          product_id: updatedProduct.id,
+          raw_material_id: 'mat-007',
+          required_amount_per_unit: 1,
+          notes: '1x Amber glass jar'
+        },
+        {
+          id: `rec-${Date.now()}-4`,
+          product_id: updatedProduct.id,
+          raw_material_id: 'mat-009',
+          required_amount_per_unit: 1,
+          notes: '1x Compostable stone paper label'
+        }
+      ];
+      setRecipes((prev) => [...prev, ...newRecipes]);
+    } else {
+      setProducts((prev) =>
+        prev.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
+      );
+      // Sync cart items if the updated product is in the shopping bag
+      setCartItems((prev) =>
+        prev.map((item) =>
+          item.product.id === updatedProduct.id
+            ? { ...item, product: updatedProduct }
+            : item
+        )
+      );
+    }
+  };
+
+  const handleDeleteProduct = (productId: string) => {
+    if (userRole !== 'admin') return;
+    setProducts((prev) => {
+      if (prev.length <= 1) return prev;
+      return prev.filter((p) => p.id !== productId);
+    });
+    setRecipes((prev) => prev.filter((r) => r.product_id !== productId));
+    setCartItems((prev) => prev.filter((c) => c.product.id !== productId));
+  };
+
+  const handleResetCatalog = () => {
+    localStorage.removeItem(PRODUCTS_STORAGE_KEY);
+    localStorage.removeItem(RECIPES_STORAGE_KEY);
+    setProducts(INITIAL_PRODUCTS);
+    setRecipes(INITIAL_RECIPES);
+    setCartItems([{ product: INITIAL_PRODUCTS[0], quantity: 1 }]);
+  };
 
   // Cart Actions
   const handleAddToCart = (product: Product) => {
@@ -225,7 +359,6 @@ export default function App() {
 
   const handleAddWasteLog = (newLog: WasteCollectionLog) => {
     setWasteLogs((prev) => [newLog, ...prev]);
-    // Also replenish matching raw material if coconut or papaya
     if (newLog.waste_type.includes('Coconut')) {
       handleRestockMaterial('mat-001', Math.round(newLog.quantity_kg * 1000 * 0.75));
     } else if (newLog.waste_type.includes('Papaya')) {
@@ -239,31 +372,33 @@ export default function App() {
 
   // Live simulation helpers for presentation
   const handleSimulateOrder = () => {
+    const flagship = products[0] || INITIAL_PRODUCTS[0];
     const randomCustomers = [
-      { name: 'Dr. Evelyn Reed', email: 'e.reed@stanford.edu', address: '450 Serra Mall, Stanford, CA' },
-      { name: 'Liam O’Connor', email: 'liam.oc@gmail.com', address: '1282 Michigan Ave, Chicago, IL' },
-      { name: 'Zara Al-Sayed', email: 'zara.beauty@outlook.com', address: '772 Brickell Ave, Miami, FL' }
+      { name: 'Dr. Kavita Krishnan', email: 'k.krishnan@iisc.ac.in', address: '14 Malleshwaram, Bengaluru, KA' },
+      { name: 'Aarav Singhania', email: 'aarav.s@gmail.com', address: '82 Worli Sea Face, Mumbai, MH' },
+      { name: 'Diya Chatterjee', email: 'diya.beauty@outlook.com', address: '19 Ballygunge Circular Rd, Kolkata, WB' }
     ];
     const customer = randomCustomers[Math.floor(Math.random() * randomCustomers.length)];
+    const orderVal = flagship.price * 2;
     const newSimOrder: Order = {
       id: `ord-sim-${Date.now()}`,
       order_number: `ORD-2026-${Math.floor(9820 + orders.length)}`,
       customer_name: customer.name,
       customer_email: customer.email,
       customer_address: customer.address,
-      subtotal: 56.00,
+      subtotal: orderVal,
       discount: 0,
-      total_amount: 56.00,
+      total_amount: orderVal,
       status: 'Processing',
       created_at: new Date().toISOString().replace('T', ' ').substring(0, 16),
-      tracking_code: `NG-DHL-${Math.floor(500000 + Math.random() * 400000)}`,
+      tracking_code: `NG-BLUEDART-${Math.floor(500000 + Math.random() * 400000)}`,
       items: [
         {
-          product_id: 'prod-001',
-          product_name: '2-in-1 Papaya Leaf, Coconut Coir, & Honey Face Scrub',
-          price: 28.00,
+          product_id: flagship.id,
+          product_name: flagship.name,
+          price: flagship.price,
           quantity: 2,
-          sku: 'NG-SCRUB-001'
+          sku: flagship.sku
         }
       ]
     };
@@ -285,12 +420,13 @@ export default function App() {
     handleAddWasteLog(newHarvest);
   };
 
-  const handleNavigateToProduction = (product: Product) => {
+  const handleNavigateToProduction = (_product: Product) => {
     setCurrentView('erp');
-    setActiveERPModule(3); // Module 3: Production & Recipe Manager
+    setActiveERPModule(3);
   };
 
   const totalCartCount = cartItems.reduce((acc, it) => acc + it.quantity, 0);
+  const flagshipProduct = products[0] || INITIAL_PRODUCTS[0];
 
   return (
     <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 selection:bg-emerald-500 selection:text-white transition-colors">
@@ -304,6 +440,7 @@ export default function App() {
         setDarkMode={setDarkMode}
         cartCount={totalCartCount}
         openCart={() => setIsCartOpen(true)}
+        onOpenAdminEditor={() => handleOpenEditProduct(flagshipProduct)}
       />
 
       {/* Main View Area */}
@@ -312,6 +449,8 @@ export default function App() {
           <div>
             {/* Storefront Hero */}
             <HeroBanner
+              flagshipProduct={flagshipProduct}
+              userRole={userRole}
               onExploreProduct={() => {
                 const el = document.getElementById('catalog-section');
                 el?.scrollIntoView({ behavior: 'smooth' });
@@ -324,13 +463,18 @@ export default function App() {
                 setCurrentView('erp');
                 setActiveERPModule(1);
               }}
+              onEditFlagship={handleOpenEditProduct}
             />
 
-            {/* Product Catalog Grid (Live Flagship + Coming Soon R&D) */}
+            {/* Product Catalog Grid (Live Flagship + Coming Soon R&D + Admin CRUD) */}
             <ProductCatalog
               products={products}
+              userRole={userRole}
               onAddToCart={handleAddToCart}
               onNavigateToProduction={handleNavigateToProduction}
+              onEditProduct={handleOpenEditProduct}
+              onOpenCreateProduct={handleOpenCreateProduct}
+              onDeleteProduct={handleDeleteProduct}
             />
 
             {/* The Coir Innovation & Circularity Model */}
@@ -366,6 +510,9 @@ export default function App() {
             onAddWasteLog={handleAddWasteLog}
             onSimulateOrder={handleSimulateOrder}
             onSimulateDelivery={handleSimulateDelivery}
+            onEditProduct={handleOpenEditProduct}
+            onOpenCreateProduct={handleOpenCreateProduct}
+            onDeleteProduct={handleDeleteProduct}
           />
         )}
       </main>
@@ -378,6 +525,19 @@ export default function App() {
         onUpdateQuantity={handleUpdateCartQuantity}
         onRemoveItem={handleRemoveFromCart}
         onCheckoutComplete={handleCheckoutComplete}
+      />
+
+      {/* Admin Product, Price & ERP Catalog Manager Modal */}
+      <AdminProductEditorModal
+        isOpen={isEditorOpen}
+        onClose={() => setIsEditorOpen(false)}
+        products={products}
+        initialProductToEdit={productToEdit}
+        initialMode={editorMode}
+        userRole={userRole}
+        onSaveProduct={handleSaveProduct}
+        onDeleteProduct={handleDeleteProduct}
+        onResetCatalog={handleResetCatalog}
       />
 
       {/* Global Footer */}

@@ -2,25 +2,36 @@ import React, { useState } from 'react';
 import {
   Shield,
   ShieldCheck,
-  ShieldAlert,
   UserCheck,
   FlaskConical,
   Lock,
   Check,
   X,
-  Sparkles
+  Plus
 } from 'lucide-react';
 import { UserRole } from '../../types';
 
 interface Module8Props {
   userRole: UserRole;
   setUserRole: (role: UserRole) => void;
+  onOpenAdminEditor: () => void;
 }
 
-export const Module8RBAC: React.FC<Module8Props> = ({ userRole, setUserRole }) => {
+export const Module8RBAC: React.FC<Module8Props> = ({
+  userRole,
+  setUserRole,
+  onOpenAdminEditor
+}) => {
   const [testActionNotice, setTestActionNotice] = useState<string | null>(null);
 
   const permissionsMatrix = [
+    {
+      feature: 'Add, Edit, or Remove Products, Images & ₹ Prices (Store & ERP)',
+      category: 'Catalog & ERP',
+      admin: true,
+      lab_tech: false,
+      customer: false
+    },
     {
       feature: 'Browse Marketplace & Upcoming R&D Catalog',
       category: 'Storefront',
@@ -29,7 +40,7 @@ export const Module8RBAC: React.FC<Module8Props> = ({ userRole, setUserRole }) =
       customer: true
     },
     {
-      feature: 'Add to Cart & Place Live Orders',
+      feature: 'Add to Cart & Place Live Orders (₹ INR)',
       category: 'Storefront',
       admin: true,
       lab_tech: true,
@@ -136,13 +147,25 @@ export const Module8RBAC: React.FC<Module8Props> = ({ userRole, setUserRole }) =
           </p>
         </div>
 
-        {/* Current Active Role Badge */}
-        <div className="flex items-center space-x-2 p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xs">
-          <Shield className="w-5 h-5 text-emerald-600" />
-          <div>
-            <div className="text-[10px] uppercase font-bold text-zinc-400">Current Session Role</div>
-            <div className="text-sm font-bold text-zinc-900 dark:text-white uppercase font-mono">
-              {userRole.replace('_', ' ')}
+        <div className="flex items-center space-x-3">
+          {userRole === 'admin' && (
+            <button
+              onClick={onOpenAdminEditor}
+              className="flex items-center space-x-1.5 px-3.5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs shadow-xs cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add / Remove ERP Products</span>
+            </button>
+          )}
+
+          {/* Current Active Role Badge */}
+          <div className="flex items-center space-x-2 p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xs">
+            <Shield className="w-5 h-5 text-emerald-600" />
+            <div>
+              <div className="text-[10px] uppercase font-bold text-zinc-400">Current Session Role</div>
+              <div className="text-sm font-bold text-zinc-900 dark:text-white uppercase font-mono">
+                {userRole.replace('_', ' ')}
+              </div>
             </div>
           </div>
         </div>
@@ -182,10 +205,10 @@ export const Module8RBAC: React.FC<Module8Props> = ({ userRole, setUserRole }) =
           </div>
           <h3 className="font-bold text-sm text-zinc-900 dark:text-white">Corporate Admin</h3>
           <p className="text-xs text-zinc-500 mt-1 leading-relaxed">
-            Full root control across marketplace catalogs, R&D budgets, supply chains, QA release, order lifecycle, and financials.
+            Full root control: add, edit, or remove products, update ₹ INR prices & photos, manage R&D budgets, QA releases, and financials.
           </p>
           <div className="text-[11px] font-bold text-amber-700 dark:text-amber-400 mt-3">
-            11 / 11 Permissions Granted
+            12 / 12 Permissions Granted
           </div>
         </div>
 
@@ -213,7 +236,7 @@ export const Module8RBAC: React.FC<Module8Props> = ({ userRole, setUserRole }) =
             Restricted to formulation recipes, raw material stock deductions, pilot batching, and microbial QA safety releases.
           </p>
           <div className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 mt-3">
-            7 / 11 Permissions Granted
+            7 / 12 Permissions Granted
           </div>
         </div>
 
@@ -241,7 +264,7 @@ export const Module8RBAC: React.FC<Module8Props> = ({ userRole, setUserRole }) =
             Standard customer privileges: browse active/upcoming catalogs, manage cart, place orders, and review invoices.
           </p>
           <div className="text-[11px] font-bold text-teal-700 dark:text-teal-400 mt-3">
-            3 / 11 Permissions Granted
+            3 / 12 Permissions Granted
           </div>
         </div>
       </div>
@@ -255,7 +278,7 @@ export const Module8RBAC: React.FC<Module8Props> = ({ userRole, setUserRole }) =
               Granular Security & Privilege Matrix
             </h3>
           </div>
-          <span className="text-xs text-zinc-500">11 System Endpoints</span>
+          <span className="text-xs text-zinc-500">12 System Endpoints</span>
         </div>
 
         <div className="overflow-x-auto">
@@ -314,7 +337,7 @@ export const Module8RBAC: React.FC<Module8Props> = ({ userRole, setUserRole }) =
                           row.admin && !row.lab_tech ? 'admin' : 'lab_tech'
                         )
                       }
-                      className="px-2 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[10px] font-semibold text-zinc-700 dark:text-zinc-300"
+                      className="px-2 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-[10px] font-semibold text-zinc-700 dark:text-zinc-300 cursor-pointer"
                     >
                       Test Privilege
                     </button>
