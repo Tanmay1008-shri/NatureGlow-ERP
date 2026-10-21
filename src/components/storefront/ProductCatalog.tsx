@@ -393,7 +393,7 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
                     <span>Connected ERP Recipe & Batch Engine</span>
                   </div>
                   <p className="text-[11px] text-zinc-500 mt-0.5">
-                    Target batch volume calculation & ingredient stock availability available in ERP Module 3.
+                    Target batch volume calculation &amp; ingredient stock availability available in ERP Production.
                   </p>
                 </div>
                 <button

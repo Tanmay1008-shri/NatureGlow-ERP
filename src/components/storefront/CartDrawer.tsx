@@ -135,7 +135,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   Thank You for Supporting Circularity!
                 </h4>
                 <p className="text-xs text-zinc-500 mt-1">
-                  Your order is live in our Enterprise ERP (Module 4) awaiting batch packaging.
+                  Your order is live in our Enterprise ERP Fulfillment Engine awaiting batch packaging.
                 </p>
               </div>
 

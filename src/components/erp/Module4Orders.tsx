@@ -43,7 +43,7 @@ export const Module4Orders: React.FC<Module4Props> = ({ orders, onUpdateOrderSta
         <div>
           <div className="flex items-center space-x-2">
             <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
-              ERP Module 4
+              Enterprise ERP
             </span>
             <span className="text-xs text-zinc-400">•</span>
             <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">

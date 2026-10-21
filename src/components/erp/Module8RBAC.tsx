@@ -69,56 +69,56 @@ export const Module8RBAC: React.FC<Module8Props> = ({
       customer: true
     },
     {
-      feature: 'View Enterprise High-Level Operations (Module 1)',
+      feature: 'View Enterprise High-Level Operations',
       category: 'ERP Operations',
       admin: true,
       lab_tech: true,
       customer: false
     },
     {
-      feature: 'Audit Raw Ingredient Matrix & Restock Shipments (Module 2)',
+      feature: 'Audit Raw Ingredient Matrix & Restock Shipments',
       category: 'Supply Chain',
       admin: true,
       lab_tech: true,
       customer: false
     },
     {
-      feature: 'Execute Dynamic Batch Runs & Formulations (Module 3)',
+      feature: 'Execute Dynamic Batch Runs & Formulations',
       category: 'Laboratory',
       admin: true,
       lab_tech: true,
       customer: false
     },
     {
-      feature: 'Approve Quality Assurance (QA) & Safety Release (Module 3)',
+      feature: 'Approve Quality Assurance (QA) & Safety Release',
       category: 'Laboratory',
       admin: true,
       lab_tech: true,
       customer: false
     },
     {
-      feature: 'Advance Order Fulfillment Status (Module 4)',
+      feature: 'Advance Order Fulfillment Status',
       category: 'Logistics',
       admin: true,
       lab_tech: false,
       customer: false
     },
     {
-      feature: 'COGS Margin Analysis & Allocate R&D Budgets (Module 5)',
+      feature: 'COGS Margin Analysis & Allocate R&D Budgets',
       category: 'Financials',
       admin: true,
       lab_tech: false,
       customer: false
     },
     {
-      feature: 'Configure Circular Sustainability Logistics (Module 6)',
+      feature: 'Configure Circular Sustainability Logistics',
       category: 'Circularity',
       admin: true,
       lab_tech: true,
       customer: false
     },
     {
-      feature: 'Access Full CRM Directory & Sentiment Insights (Module 7)',
+      feature: 'Access Full CRM Directory & Sentiment Insights',
       category: 'Executive',
       admin: true,
       lab_tech: false,
@@ -159,7 +159,7 @@ export const Module8RBAC: React.FC<Module8Props> = ({
         <div>
           <div className="flex items-center space-x-2">
             <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
-              ERP Module 8
+              Enterprise ERP
             </span>
             <span className="text-xs text-zinc-400">·</span>
             <span className="text-xs font-semibold text-zinc-600 dark:text-zinc-400">
@@ -262,8 +262,8 @@ export const Module8RBAC: React.FC<Module8Props> = ({
           </div>
           <h3 className="font-bold text-sm text-zinc-900 dark:text-white">Lab Tech / Production</h3>
           <p className="text-xs text-zinc-500 mt-1 leading-relaxed">
-            Scoped strictly to formulation recipes, raw material stock deductions, pilot batching (M3), and waste
-            logistics (M6). Blocked from Financials (M5) &amp; Catalog edits.
+            Scoped strictly to formulation recipes, raw material stock deductions, pilot batching, and waste
+            logistics. Blocked from Financials &amp; Catalog edits.
           </p>
           <div className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 mt-3">
             7 / 12 System Endpoints Authorized

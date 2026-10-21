@@ -544,8 +544,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                   <div>Pass: LabTech@123</div>
                 </div>
                 <p className="text-[11px] text-zinc-500 mt-2">
-                  Authorized for Raw Material Inventory (M2), Recipe Batch Execution &amp; QA Release (M3), and Waste
-                  Logistics (M6). Blocked from Financials (M5), Order Dispatch (M4), and Catalog Pricing.
+                  Authorized for Raw Material Inventory, Recipe Batch Execution &amp; QA Release, and Waste
+                  Logistics. Blocked from Financials, Order Dispatch, and Catalog Pricing.
                 </p>
               </div>
 

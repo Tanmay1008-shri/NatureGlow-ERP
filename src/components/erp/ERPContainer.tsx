@@ -164,7 +164,7 @@ export const ERPContainer: React.FC<ERPContainerProps> = ({
                 </div>
                 <div className="min-w-0">
                   <div className="text-[11px] font-bold truncate">
-                    M{m.id}: {m.name}
+                    {m.name}
                   </div>
                   <div className={`text-[10px] truncate ${isActive ? 'text-emerald-100' : 'text-zinc-400'}`}>
                     {allowed ? m.subtitle : 'Admin Only (403)'}
@@ -187,12 +187,12 @@ export const ERPContainer: React.FC<ERPContainerProps> = ({
               HTTP 403 Forbidden · Role Authorization Policy
             </p>
             <h2 className="text-2xl font-serif font-bold text-zinc-900 dark:text-white">
-              Corporate Admin Clearance Required for Module {activeModule}
+              Corporate Admin Clearance Required
             </h2>
             <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
               Your current session (<strong>{currentUser.name}</strong> ·{' '}
               <code className="font-mono font-bold">{currentUser.role.toUpperCase()}</code>) is authorized for
-              Laboratory Production (M3), Raw Material Inventory (M2), and Circular Waste Logistics (M6), but is
+              Laboratory Production, Raw Material Inventory, and Circular Waste Logistics, but is
               restricted from accessing executive financial margins, order dispatch, and customer CRM records.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
@@ -200,7 +200,7 @@ export const ERPContainer: React.FC<ERPContainerProps> = ({
                 onClick={() => setActiveModule(3)}
                 className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs cursor-pointer"
               >
-                Go to M3: Production &amp; Recipes
+                Go to Production &amp; Recipes
               </button>
               <button
                 onClick={onLogoutAndSwitch}

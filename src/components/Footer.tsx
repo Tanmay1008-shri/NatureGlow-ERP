@@ -60,47 +60,47 @@ export const Footer: React.FC<FooterProps> = ({ onGoToStore, onGoToERP }) => {
           {/* ERP Infrastructure Modules */}
           <div>
             <h4 className="font-bold text-white text-xs uppercase tracking-wider mb-3">
-              Enterprise ERP Modules
+              Enterprise ERP Portal
             </h4>
             <ul className="space-y-2">
               <li>
-                <button onClick={() => onGoToERP(1)} className="hover:text-emerald-400 transition-colors">
-                  Module 1: Operations Telemetry
+                <button onClick={() => onGoToERP(1)} className="hover:text-emerald-400 transition-colors cursor-pointer">
+                  Operations Telemetry
                 </button>
               </li>
               <li>
-                <button onClick={() => onGoToERP(2)} className="hover:text-emerald-400 transition-colors">
-                  Module 2: Aggregated Inventory Matrix
+                <button onClick={() => onGoToERP(2)} className="hover:text-emerald-400 transition-colors cursor-pointer">
+                  Aggregated Inventory Matrix
                 </button>
               </li>
               <li>
-                <button onClick={() => onGoToERP(3)} className="hover:text-emerald-400 transition-colors">
-                  Module 3: Recipe & Batch Engine
+                <button onClick={() => onGoToERP(3)} className="hover:text-emerald-400 transition-colors cursor-pointer">
+                  Recipe &amp; Batch Engine
                 </button>
               </li>
               <li>
-                <button onClick={() => onGoToERP(4)} className="hover:text-emerald-400 transition-colors">
-                  Module 4: Fulfillment Logistics
+                <button onClick={() => onGoToERP(4)} className="hover:text-emerald-400 transition-colors cursor-pointer">
+                  Fulfillment Logistics
                 </button>
               </li>
               <li>
-                <button onClick={() => onGoToERP(5)} className="hover:text-emerald-400 transition-colors">
-                  Module 5: COGS & R&D Financials
+                <button onClick={() => onGoToERP(5)} className="hover:text-emerald-400 transition-colors cursor-pointer">
+                  COGS &amp; R&amp;D Financials
                 </button>
               </li>
               <li>
-                <button onClick={() => onGoToERP(6)} className="hover:text-emerald-400 transition-colors">
-                  Module 6: Circular Sustainability
+                <button onClick={() => onGoToERP(6)} className="hover:text-emerald-400 transition-colors cursor-pointer">
+                  Circular Sustainability
                 </button>
               </li>
               <li>
-                <button onClick={() => onGoToERP(7)} className="hover:text-emerald-400 transition-colors">
-                  Module 7: CRM & AI Sentiment
+                <button onClick={() => onGoToERP(7)} className="hover:text-emerald-400 transition-colors cursor-pointer">
+                  CRM &amp; AI Sentiment
                 </button>
               </li>
               <li>
-                <button onClick={() => onGoToERP(8)} className="hover:text-emerald-400 transition-colors">
-                  Module 8: RBAC Security
+                <button onClick={() => onGoToERP(8)} className="hover:text-emerald-400 transition-colors cursor-pointer">
+                  RBAC Security
                 </button>
               </li>
             </ul>

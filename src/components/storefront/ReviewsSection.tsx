@@ -185,7 +185,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews, onAddRe
               Review: 2-in-1 Papaya Leaf, Coconut Coir, & Honey Face Scrub
             </h3>
             <p className="text-xs text-zinc-500 mb-4">
-              Your feedback feeds directly into our ERP Sentiment Engine (Module 7) for quality audits.
+              Your feedback feeds directly into our ERP Sentiment Engine for quality audits.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
