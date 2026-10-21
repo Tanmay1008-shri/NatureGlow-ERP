@@ -1,0 +1,6 @@
+{
+  "name": "NatureGlow - Circular Skincare & ERP Platform",
+  "description": "Scalable circular skincare brand and enterprise resource planning platform featuring upcycled agricultural ingredients, live flagship face scrub, and 8 integrated ERP business modules.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
