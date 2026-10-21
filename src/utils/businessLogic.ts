@@ -2,7 +2,9 @@ import {
   RawMaterial,
   FormulationRecipeItem,
   WasteCollectionLog,
-  Review
+  Review,
+  AuthUser,
+  UserRole
 } from '../types';
 
 export interface BatchRequirementResult {
@@ -283,3 +285,173 @@ export function analyzeReviewSentiment(reviews: Review[]): SentimentAnalysisResu
     actionableInsights
   };
 }
+
+/**
+ * Role-Based Access Control (RBAC) & Authentication Pure Logic
+ */
+export const ROLE_SECURITY_PASSCODES: Record<'admin' | 'lab_tech', string> = {
+  admin: 'NG-ADMIN-2025',
+  lab_tech: 'NG-LAB-2025'
+};
+
+export interface AuthResult {
+  success: boolean;
+  user?: AuthUser;
+  updatedUsers?: AuthUser[];
+  error?: string;
+}
+
+export function authenticateUser(
+  users: AuthUser[],
+  emailInput: string,
+  passwordInput: string
+): AuthResult {
+  const cleanEmail = emailInput.trim().toLowerCase();
+  if (!cleanEmail || !passwordInput) {
+    return {
+      success: false,
+      error: 'Please enter both your email address and password.'
+    };
+  }
+
+  const found = users.find((u) => u.email.toLowerCase() === cleanEmail);
+  if (!found) {
+    return {
+      success: false,
+      error: 'No account found with that email address. Please check your email or sign up.'
+    };
+  }
+
+  if (found.password !== passwordInput) {
+    return {
+      success: false,
+      error: 'Invalid password for this account. Please verify your credentials.'
+    };
+  }
+
+  const authenticatedUser: AuthUser = {
+    ...found,
+    last_login: new Date().toISOString().slice(0, 16).replace('T', ' ')
+  };
+
+  return {
+    success: true,
+    user: authenticatedUser
+  };
+}
+
+export interface RegisterInput {
+  name: string;
+  email: string;
+  password: string;
+  role: UserRole;
+  securityPasscode?: string;
+}
+
+export function registerUser(
+  users: AuthUser[],
+  input: RegisterInput
+): AuthResult {
+  const cleanName = input.name.trim();
+  const cleanEmail = input.email.trim().toLowerCase();
+
+  if (!cleanName || cleanName.length < 2) {
+    return {
+      success: false,
+      error: 'Please enter your full name (at least 2 characters).'
+    };
+  }
+
+  if (!cleanEmail || !cleanEmail.includes('@') || !cleanEmail.includes('.')) {
+    return {
+      success: false,
+      error: 'Please enter a valid email address.'
+    };
+  }
+
+  if (!input.password || input.password.length < 6) {
+    return {
+      success: false,
+      error: 'Password must be at least 6 characters long.'
+    };
+  }
+
+  if (users.some((u) => u.email.toLowerCase() === cleanEmail)) {
+    return {
+      success: false,
+      error: 'An account with this email address already exists. Please sign in instead.'
+    };
+  }
+
+  // Enforce role elevation authorization passcode for Admin & Lab Tech
+  if (input.role === 'admin') {
+    if ((input.securityPasscode || '').trim() !== ROLE_SECURITY_PASSCODES.admin) {
+      return {
+        success: false,
+        error: 'Authorization Denied: Valid Corporate Admin Security Key (NG-ADMIN-2025) is required to provision an Admin account.'
+      };
+    }
+  } else if (input.role === 'lab_tech') {
+    if ((input.securityPasscode || '').trim() !== ROLE_SECURITY_PASSCODES.lab_tech) {
+      return {
+        success: false,
+        error: 'Authorization Denied: Valid Laboratory Security Key (NG-LAB-2025) is required to provision a Lab Technician account.'
+      };
+    }
+  }
+
+  const departmentMap: Record<UserRole, string> = {
+    admin: 'Corporate Executive & ERP Root',
+    lab_tech: 'Formulation Lab & Batch QA',
+    customer: 'Verified Retail Customer'
+  };
+
+  const nowStr = new Date().toISOString().slice(0, 10);
+  const newUser: AuthUser = {
+    id: `usr-${Date.now()}`,
+    name: cleanName,
+    email: cleanEmail,
+    password: input.password,
+    role: input.role,
+    department: departmentMap[input.role],
+    created_at: nowStr,
+    last_login: `${nowStr} Just now`
+  };
+
+  return {
+    success: true,
+    user: newUser,
+    updatedUsers: [...users, newUser]
+  };
+}
+
+/**
+ * Checks whether the current user is authorized to enter the Enterprise ERP portal
+ */
+export function canAccessERP(user: AuthUser | null): boolean {
+  if (!user) return false;
+  return user.role === 'admin' || user.role === 'lab_tech';
+}
+
+/**
+ * Checks whether the current user is authorized to view/operate a specific ERP module (1-8)
+ * Admin: All modules 1-8
+ * Lab Tech: Modules 1 (Operations Read-only), 2 (Inventory), 3 (Production), 6 (Circularity), 8 (Security Read-only)
+ * Customer / Guest: None
+ */
+export function canAccessERPModule(user: AuthUser | null, moduleId: number): boolean {
+  if (!user) return false;
+  if (user.role === 'admin') return true;
+  if (user.role === 'lab_tech') {
+    return [1, 2, 3, 6, 8].includes(moduleId);
+  }
+  return false;
+}
+
+/**
+ * Checks whether the current user is authorized to add/edit/delete products & ₹ INR prices
+ */
+export function canManageCatalog(user: AuthUser | null): boolean {
+  return Boolean(user && user.role === 'admin');
+}
+

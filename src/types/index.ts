@@ -131,3 +131,25 @@ export interface CartItem {
   product: Product;
   quantity: number;
 }
+
+export interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  role: UserRole;
+  department: string;
+  created_at: string;
+  last_login: string;
+}
+
+export interface SecurityAuditEvent {
+  id: string;
+  timestamp: string;
+  actor_email: string;
+  actor_role: UserRole | 'guest';
+  action: string;
+  status: 'ALLOWED' | 'DENIED';
+  details: string;
+}
+

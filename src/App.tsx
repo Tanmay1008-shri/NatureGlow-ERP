@@ -7,6 +7,7 @@ import { ReviewsSection } from './components/storefront/ReviewsSection';
 import { CartDrawer } from './components/storefront/CartDrawer';
 import { AdminProductEditorModal } from './components/AdminProductEditorModal';
 import { ERPContainer } from './components/erp/ERPContainer';
+import { AuthPage } from './components/auth/AuthPage';
 import { Footer } from './components/Footer';
 
 import {
@@ -17,7 +18,9 @@ import {
   INITIAL_ORDERS,
   INITIAL_RND_PROJECTS,
   INITIAL_WASTE_LOGS,
-  INITIAL_REVIEWS
+  INITIAL_REVIEWS,
+  INITIAL_AUTH_USERS,
+  INITIAL_SECURITY_AUDIT_LOGS
 } from './data/mockData';
 
 import {
@@ -31,13 +34,23 @@ import {
   Review,
   UserRole,
   CartItem,
-  OrderStatus
+  OrderStatus,
+  AuthUser,
+  SecurityAuditEvent
 } from './types';
 
-import { deductMaterialsForBatch } from './utils/businessLogic';
+import {
+  deductMaterialsForBatch,
+  authenticateUser,
+  registerUser,
+  canAccessERP,
+  canManageCatalog
+} from './utils/businessLogic';
 
 const PRODUCTS_STORAGE_KEY = 'natureglow_products_inr_v3';
 const RECIPES_STORAGE_KEY = 'natureglow_recipes_inr_v3';
+const AUTH_USERS_STORAGE_KEY = 'natureglow_auth_users_v1';
+const ACTIVE_SESSION_STORAGE_KEY = 'natureglow_active_session_v1';
 
 export default function App() {
   // Dark mode state
@@ -60,10 +73,269 @@ export default function App() {
     }
   }, [darkMode]);
 
-  // Main navigation & Role
-  const [currentView, setCurrentView] = useState<'store' | 'erp'>('store');
+  // Registered Users Directory (persisted in localStorage)
+  const [authUsers, setAuthUsers] = useState<AuthUser[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem(AUTH_USERS_STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch {
+        // Fallback to seed accounts
+      }
+    }
+    return INITIAL_AUTH_USERS;
+  });
+
+  // Active Authenticated Session (null by default so guests cannot access Admin/ERP without logging in)
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem(ACTIVE_SESSION_STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed && parsed.id && parsed.role) return parsed;
+        }
+      } catch {
+        // Ignore parse error
+      }
+    }
+    return null;
+  });
+
+  const [securityLogs, setSecurityLogs] = useState<SecurityAuditEvent[]>(INITIAL_SECURITY_AUDIT_LOGS);
+  const [authRedirectReason, setAuthRedirectReason] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(AUTH_USERS_STORAGE_KEY, JSON.stringify(authUsers));
+    } catch {
+      // Ignore storage errors
+    }
+  }, [authUsers]);
+
+  useEffect(() => {
+    try {
+      if (currentUser) {
+        localStorage.setItem(ACTIVE_SESSION_STORAGE_KEY, JSON.stringify(currentUser));
+      } else {
+        localStorage.removeItem(ACTIVE_SESSION_STORAGE_KEY);
+      }
+    } catch {
+      // Ignore storage errors
+    }
+  }, [currentUser]);
+
+  // Effective role for UI rendering ('customer' when unauthenticated guest)
+  const effectiveRole: UserRole = currentUser ? currentUser.role : 'customer';
+
+  // Main navigation & ERP module state
+  const [currentView, setCurrentViewState] = useState<'store' | 'erp' | 'auth'>('store');
   const [activeERPModule, setActiveERPModule] = useState<number>(1);
-  const [userRole, setUserRole] = useState<UserRole>('admin');
+
+  const appendSecurityLog = (
+    actorEmail: string,
+    actorRole: UserRole | 'guest',
+    action: string,
+    status: 'ALLOWED' | 'DENIED',
+    details: string
+  ) => {
+    const nowStr = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    const newEvent: SecurityAuditEvent = {
+      id: `sec-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      timestamp: nowStr,
+      actor_email: actorEmail,
+      actor_role: actorRole,
+      action,
+      status,
+      details
+    };
+    setSecurityLogs((prev) => [newEvent, ...prev]);
+  };
+
+  // Protected route navigation handler
+  const handleNavigateView = (targetView: 'store' | 'erp' | 'auth') => {
+    if (targetView === 'erp') {
+      if (!currentUser) {
+        appendSecurityLog(
+          'anonymous@guest',
+          'guest',
+          'Attempted Unauthenticated ERP Access',
+          'DENIED',
+          'Redirected to Security Gateway: Authentication required for Enterprise ERP.'
+        );
+        setAuthRedirectReason(
+          'Please sign in with an authorized Corporate Admin or Lab Technician account to access the 8-Module Enterprise ERP.'
+        );
+        setCurrentViewState('auth');
+        return;
+      }
+      if (!canAccessERP(currentUser)) {
+        appendSecurityLog(
+          currentUser.email,
+          currentUser.role,
+          'Attempted ERP Access with Customer Role',
+          'DENIED',
+          'HTTP 403 Forbidden: Customer role is restricted from Enterprise ERP modules.'
+        );
+        setAuthRedirectReason(
+          'HTTP 403 Forbidden: Standard Customer accounts cannot access the Enterprise ERP dashboard.'
+        );
+        setCurrentViewState('auth');
+        return;
+      }
+      setAuthRedirectReason(null);
+      setCurrentViewState('erp');
+      return;
+    }
+
+    if (targetView === 'store') {
+      setAuthRedirectReason(null);
+    }
+    setCurrentViewState(targetView);
+  };
+
+  // Authentication Handlers
+  const handleLogin = (email: string, password: string): { success: boolean; error?: string } => {
+    const res = authenticateUser(authUsers, email, password);
+    if (!res.success || !res.user) {
+      appendSecurityLog(
+        email || 'unknown',
+        'guest',
+        'Failed Sign-In Attempt',
+        'DENIED',
+        res.error || 'Invalid credentials.'
+      );
+      return { success: false, error: res.error };
+    }
+
+    const loggedInUser = res.user;
+    setCurrentUser(loggedInUser);
+    setAuthUsers((prev) => prev.map((u) => (u.id === loggedInUser.id ? loggedInUser : u)));
+    setAuthRedirectReason(null);
+
+    appendSecurityLog(
+      loggedInUser.email,
+      loggedInUser.role,
+      'User Session Authenticated',
+      'ALLOWED',
+      `Signed in as ${loggedInUser.name} with [${loggedInUser.role.toUpperCase()}] privileges.`
+    );
+
+    if (loggedInUser.role === 'admin') {
+      setActiveERPModule(1);
+      setCurrentViewState('erp');
+    } else if (loggedInUser.role === 'lab_tech') {
+      setActiveERPModule(3);
+      setCurrentViewState('erp');
+    } else {
+      setCurrentViewState('store');
+    }
+
+    return { success: true };
+  };
+
+  const handleRegister = (input: {
+    name: string;
+    email: string;
+    password: string;
+    role: UserRole;
+    securityPasscode?: string;
+  }): { success: boolean; error?: string } => {
+    const res = registerUser(authUsers, input);
+    if (!res.success || !res.user || !res.updatedUsers) {
+      appendSecurityLog(
+        input.email || 'unknown',
+        'guest',
+        `Blocked Account Registration (${input.role.toUpperCase()})`,
+        'DENIED',
+        res.error || 'Registration validation failed.'
+      );
+      return { success: false, error: res.error };
+    }
+
+    setAuthUsers(res.updatedUsers);
+    setCurrentUser(res.user);
+    setAuthRedirectReason(null);
+
+    appendSecurityLog(
+      res.user.email,
+      res.user.role,
+      `Provisioned New Account (${res.user.role.toUpperCase()})`,
+      'ALLOWED',
+      `Registered ${res.user.name} in ${res.user.department}.`
+    );
+
+    if (res.user.role === 'admin') {
+      setActiveERPModule(1);
+      setCurrentViewState('erp');
+    } else if (res.user.role === 'lab_tech') {
+      setActiveERPModule(3);
+      setCurrentViewState('erp');
+    } else {
+      setCurrentViewState('store');
+    }
+
+    return { success: true };
+  };
+
+  const handleLogout = () => {
+    if (currentUser) {
+      appendSecurityLog(
+        currentUser.email,
+        currentUser.role,
+        'User Session Signed Out',
+        'ALLOWED',
+        `Terminated session for ${currentUser.name}.`
+      );
+    }
+    setCurrentUser(null);
+    setIsEditorOpen(false);
+    if (currentView === 'erp') {
+      setCurrentViewState('auth');
+    }
+  };
+
+  const handleUpdateUserRole = (userId: string, newRole: UserRole) => {
+    if (!currentUser || currentUser.role !== 'admin') return;
+    const departmentMap: Record<UserRole, string> = {
+      admin: 'Corporate Executive & ERP Root',
+      lab_tech: 'Formulation Lab & Batch QA',
+      customer: 'Verified Retail Customer'
+    };
+    setAuthUsers((prev) =>
+      prev.map((u) =>
+        u.id === userId ? { ...u, role: newRole, department: departmentMap[newRole] } : u
+      )
+    );
+    const target = authUsers.find((u) => u.id === userId);
+    if (target) {
+      appendSecurityLog(
+        currentUser.email,
+        currentUser.role,
+        `Updated Role for ${target.email}`,
+        'ALLOWED',
+        `Changed role from ${target.role.toUpperCase()} to ${newRole.toUpperCase()}.`
+      );
+    }
+  };
+
+  const handleDeleteUser = (userId: string) => {
+    if (!currentUser || currentUser.role !== 'admin' || userId === currentUser.id) return;
+    const target = authUsers.find((u) => u.id === userId);
+    setAuthUsers((prev) => prev.filter((u) => u.id !== userId));
+    if (target) {
+      appendSecurityLog(
+        currentUser.email,
+        currentUser.role,
+        `Revoked Account ${target.email}`,
+        'ALLOWED',
+        `Removed ${target.name} (${target.role.toUpperCase()}) from active directory.`
+      );
+    }
+  };
 
   // Business state (with localStorage persistence for products & recipes)
   const [products, setProducts] = useState<Product[]>(() => {
@@ -133,23 +405,33 @@ export default function App() {
   ]);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  // Admin Product CRUD Handlers
+  // Admin Product CRUD Handlers (Strictly guarded by canManageCatalog)
   const handleOpenEditProduct = (product: Product) => {
+    if (!canManageCatalog(currentUser)) {
+      setAuthRedirectReason('Corporate Admin authentication is required to edit product prices and photos.');
+      setCurrentViewState('auth');
+      return;
+    }
     setProductToEdit(product);
     setEditorMode('edit');
     setIsEditorOpen(true);
   };
 
   const handleOpenCreateProduct = () => {
+    if (!canManageCatalog(currentUser)) {
+      setAuthRedirectReason('Corporate Admin authentication is required to add new products to the ERP.');
+      setCurrentViewState('auth');
+      return;
+    }
     setProductToEdit(null);
     setEditorMode('create');
     setIsEditorOpen(true);
   };
 
   const handleSaveProduct = (updatedProduct: Product, isNew: boolean) => {
+    if (!canManageCatalog(currentUser)) return;
     if (isNew) {
       setProducts((prev) => [...prev, updatedProduct]);
-      // Create default formulation recipe for ERP Module 3 & Module 5 compatibility
       const newRecipes: FormulationRecipeItem[] = [
         {
           id: `rec-${Date.now()}-1`,
@@ -181,11 +463,17 @@ export default function App() {
         }
       ];
       setRecipes((prev) => [...prev, ...newRecipes]);
+      appendSecurityLog(
+        currentUser!.email,
+        currentUser!.role,
+        `Created Product SKU ${updatedProduct.sku}`,
+        'ALLOWED',
+        `Added "${updatedProduct.name}" at ₹${updatedProduct.price} INR.`
+      );
     } else {
       setProducts((prev) =>
         prev.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
       );
-      // Sync cart items if the updated product is in the shopping bag
       setCartItems((prev) =>
         prev.map((item) =>
           item.product.id === updatedProduct.id
@@ -193,20 +481,38 @@ export default function App() {
             : item
         )
       );
+      appendSecurityLog(
+        currentUser!.email,
+        currentUser!.role,
+        `Updated Product SKU ${updatedProduct.sku}`,
+        'ALLOWED',
+        `Saved changes to "${updatedProduct.name}" (₹${updatedProduct.price} INR).`
+      );
     }
   };
 
   const handleDeleteProduct = (productId: string) => {
-    if (userRole !== 'admin') return;
+    if (!canManageCatalog(currentUser)) return;
+    const target = products.find((p) => p.id === productId);
     setProducts((prev) => {
       if (prev.length <= 1) return prev;
       return prev.filter((p) => p.id !== productId);
     });
     setRecipes((prev) => prev.filter((r) => r.product_id !== productId));
     setCartItems((prev) => prev.filter((c) => c.product.id !== productId));
+    if (target && currentUser) {
+      appendSecurityLog(
+        currentUser.email,
+        currentUser.role,
+        `Deleted Product SKU ${target.sku}`,
+        'ALLOWED',
+        `Removed "${target.name}" from Storefront & ERP.`
+      );
+    }
   };
 
   const handleResetCatalog = () => {
+    if (!canManageCatalog(currentUser)) return;
     localStorage.removeItem(PRODUCTS_STORAGE_KEY);
     localStorage.removeItem(RECIPES_STORAGE_KEY);
     setProducts(INITIAL_PRODUCTS);
@@ -247,10 +553,7 @@ export default function App() {
   };
 
   const handleCheckoutComplete = (newOrder: Order) => {
-    // 1. Add order to ERP orders
     setOrders((prev) => [newOrder, ...prev]);
-
-    // 2. Decrement finished stock in products
     setProducts((prev) =>
       prev.map((prod) => {
         const orderedItem = newOrder.items.find((i) => i.product_id === prod.id);
@@ -263,8 +566,6 @@ export default function App() {
         return prod;
       })
     );
-
-    // 3. Clear cart
     setCartItems([]);
   };
 
@@ -291,12 +592,9 @@ export default function App() {
 
   const handleExecuteBatch = (productId: string, batchSize: number, notes: string) => {
     const productRecipe = recipes.filter((r) => r.product_id === productId);
-
-    // Deduct materials from stock
     const updatedMaterials = deductMaterialsForBatch(materials, productRecipe, batchSize);
     setMaterials(updatedMaterials);
 
-    // Add new batch in Pending Safety Clearance
     const batchNumber = `LOT-NG-2026-B${Math.floor(85 + batches.length)}`;
     const newBatch: Batch = {
       id: `batch-${Date.now()}`,
@@ -307,7 +605,7 @@ export default function App() {
       created_at: new Date().toISOString().split('T')[0],
       scheduled_completion: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       safety_check_notes: notes || 'Enzyme activity retention assay & preservative challenge testing in incubation.',
-      tested_by: userRole === 'lab_tech' ? 'Lab Tech Specialist' : 'Chief Toxicologist'
+      tested_by: currentUser?.name || 'Lab Tech Specialist'
     };
 
     setBatches((prev) => [newBatch, ...prev]);
@@ -317,7 +615,6 @@ export default function App() {
     const targetBatch = batches.find((b) => b.id === batchId);
     if (!targetBatch) return;
 
-    // Transition batch to 'Released'
     setBatches((prev) =>
       prev.map((b) =>
         b.id === batchId
@@ -325,13 +622,12 @@ export default function App() {
               ...b,
               status: 'Released',
               quality_score: 99.1,
-              tested_by: 'QA Director Approved'
+              tested_by: currentUser?.name || 'QA Director Approved'
             }
           : b
       )
     );
 
-    // Increment finished product current_stock!
     setProducts((prev) =>
       prev.map((p) =>
         p.id === targetBatch.product_id
@@ -370,7 +666,6 @@ export default function App() {
     setReviews((prev) => [newReview, ...prev]);
   };
 
-  // Live simulation helpers for presentation
   const handleSimulateOrder = () => {
     const flagship = products[0] || INITIAL_PRODUCTS[0];
     const randomCustomers = [
@@ -421,7 +716,7 @@ export default function App() {
   };
 
   const handleNavigateToProduction = (_product: Product) => {
-    setCurrentView('erp');
+    handleNavigateView('erp');
     setActiveERPModule(3);
   };
 
@@ -433,9 +728,9 @@ export default function App() {
       {/* Global Navigation */}
       <Navbar
         currentView={currentView}
-        setCurrentView={setCurrentView}
-        userRole={userRole}
-        setUserRole={setUserRole}
+        setCurrentView={handleNavigateView}
+        currentUser={currentUser}
+        onLogout={handleLogout}
         darkMode={darkMode}
         setDarkMode={setDarkMode}
         cartCount={totalCartCount}
@@ -445,12 +740,21 @@ export default function App() {
 
       {/* Main View Area */}
       <main className="flex-1">
-        {currentView === 'store' ? (
+        {currentView === 'auth' || (currentView === 'erp' && !canAccessERP(currentUser)) ? (
+          <AuthPage
+            currentUser={currentUser}
+            redirectReason={authRedirectReason}
+            onLogin={handleLogin}
+            onRegister={handleRegister}
+            onLogout={handleLogout}
+            onBackToStore={() => handleNavigateView('store')}
+          />
+        ) : currentView === 'store' ? (
           <div>
             {/* Storefront Hero */}
             <HeroBanner
               flagshipProduct={flagshipProduct}
-              userRole={userRole}
+              userRole={effectiveRole}
               onExploreProduct={() => {
                 const el = document.getElementById('catalog-section');
                 el?.scrollIntoView({ behavior: 'smooth' });
@@ -460,7 +764,7 @@ export default function App() {
                 el?.scrollIntoView({ behavior: 'smooth' });
               }}
               onGoToERP={() => {
-                setCurrentView('erp');
+                handleNavigateView('erp');
                 setActiveERPModule(1);
               }}
               onEditFlagship={handleOpenEditProduct}
@@ -469,7 +773,7 @@ export default function App() {
             {/* Product Catalog Grid (Live Flagship + Coming Soon R&D + Admin CRUD) */}
             <ProductCatalog
               products={products}
-              userRole={userRole}
+              userRole={effectiveRole}
               onAddToCart={handleAddToCart}
               onNavigateToProduction={handleNavigateToProduction}
               onEditProduct={handleOpenEditProduct}
@@ -487,33 +791,45 @@ export default function App() {
             />
           </div>
         ) : (
-          /* Enterprise ERP System (8 Interconnected Modules) */
-          <ERPContainer
-            activeModule={activeERPModule}
-            setActiveModule={setActiveERPModule}
-            userRole={userRole}
-            setUserRole={setUserRole}
-            products={products}
-            materials={materials}
-            recipes={recipes}
-            batches={batches}
-            orders={orders}
-            rndProjects={rndProjects}
-            wasteLogs={wasteLogs}
-            reviews={reviews}
-            onRestockMaterial={handleRestockMaterial}
-            onRestockFinishedProduct={handleRestockFinishedProduct}
-            onExecuteBatch={handleExecuteBatch}
-            onReleaseBatch={handleReleaseBatch}
-            onUpdateOrderStatus={handleUpdateOrderStatus}
-            onAddRNDBudget={handleAddRNDBudget}
-            onAddWasteLog={handleAddWasteLog}
-            onSimulateOrder={handleSimulateOrder}
-            onSimulateDelivery={handleSimulateDelivery}
-            onEditProduct={handleOpenEditProduct}
-            onOpenCreateProduct={handleOpenCreateProduct}
-            onDeleteProduct={handleDeleteProduct}
-          />
+          /* Enterprise ERP System (Protected by Role-Based Authentication) */
+          currentUser && (
+            <ERPContainer
+              activeModule={activeERPModule}
+              setActiveModule={setActiveERPModule}
+              currentUser={currentUser}
+              authUsers={authUsers}
+              securityLogs={securityLogs}
+              onUpdateUserRole={handleUpdateUserRole}
+              onDeleteUser={handleDeleteUser}
+              onLogSecurityEvent={(action, status, details) =>
+                appendSecurityLog(currentUser.email, currentUser.role, action, status, details)
+              }
+              onLogoutAndSwitch={() => {
+                handleLogout();
+                setCurrentViewState('auth');
+              }}
+              products={products}
+              materials={materials}
+              recipes={recipes}
+              batches={batches}
+              orders={orders}
+              rndProjects={rndProjects}
+              wasteLogs={wasteLogs}
+              reviews={reviews}
+              onRestockMaterial={handleRestockMaterial}
+              onRestockFinishedProduct={handleRestockFinishedProduct}
+              onExecuteBatch={handleExecuteBatch}
+              onReleaseBatch={handleReleaseBatch}
+              onUpdateOrderStatus={handleUpdateOrderStatus}
+              onAddRNDBudget={handleAddRNDBudget}
+              onAddWasteLog={handleAddWasteLog}
+              onSimulateOrder={handleSimulateOrder}
+              onSimulateDelivery={handleSimulateDelivery}
+              onEditProduct={handleOpenEditProduct}
+              onOpenCreateProduct={handleOpenCreateProduct}
+              onDeleteProduct={handleDeleteProduct}
+            />
+          )
         )}
       </main>
 
@@ -534,7 +850,7 @@ export default function App() {
         products={products}
         initialProductToEdit={productToEdit}
         initialMode={editorMode}
-        userRole={userRole}
+        userRole={effectiveRole}
         onSaveProduct={handleSaveProduct}
         onDeleteProduct={handleDeleteProduct}
         onResetCatalog={handleResetCatalog}
@@ -543,12 +859,12 @@ export default function App() {
       {/* Global Footer */}
       <Footer
         onGoToStore={() => {
-          setCurrentView('store');
+          handleNavigateView('store');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         onGoToERP={(mod) => {
-          setCurrentView('erp');
           setActiveERPModule(mod);
+          handleNavigateView('erp');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
       />

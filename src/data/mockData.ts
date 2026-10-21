@@ -6,7 +6,9 @@ import {
   Order,
   RNDProject,
   WasteCollectionLog,
-  Review
+  Review,
+  AuthUser,
+  SecurityAuditEvent
 } from '../types';
 
 export const INITIAL_PRODUCTS: Product[] = [
@@ -565,3 +567,76 @@ export const INITIAL_REVIEWS: Review[] = [
     tags: ['Natural Scent', 'Soft Texture']
   }
 ];
+
+export const INITIAL_AUTH_USERS: AuthUser[] = [
+  {
+    id: 'usr-admin-01',
+    name: 'Tanmay Kolekar',
+    email: 'admin@natureglow.in',
+    password: 'Admin@123',
+    role: 'admin',
+    department: 'Corporate Executive & ERP Root',
+    created_at: '2026-01-15',
+    last_login: '2026-10-21 11:15 IST'
+  },
+  {
+    id: 'usr-lab-01',
+    name: 'Dr. Vikram Nair',
+    email: 'lab@natureglow.in',
+    password: 'LabTech@123',
+    role: 'lab_tech',
+    department: 'Formulation Lab & Batch QA',
+    created_at: '2026-03-10',
+    last_login: '2026-10-21 09:40 IST'
+  },
+  {
+    id: 'usr-cust-01',
+    name: 'Ananya Sharma',
+    email: 'ananya.sharma@gmail.com',
+    password: 'Customer@123',
+    role: 'customer',
+    department: 'Verified Retail Customer',
+    created_at: '2026-08-22',
+    last_login: '2026-10-20 19:20 IST'
+  }
+];
+
+export const INITIAL_SECURITY_AUDIT_LOGS: SecurityAuditEvent[] = [
+  {
+    id: 'sec-001',
+    timestamp: '2026-10-21 11:15:04',
+    actor_email: 'admin@natureglow.in',
+    actor_role: 'admin',
+    action: 'ERP Root Session Authenticated',
+    status: 'ALLOWED',
+    details: 'Full RBAC privileges granted across Modules 1–8 and Storefront Catalog Manager.'
+  },
+  {
+    id: 'sec-002',
+    timestamp: '2026-10-21 10:42:19',
+    actor_email: 'lab@natureglow.in',
+    actor_role: 'lab_tech',
+    action: 'Access Module 5 (Financials & COGS)',
+    status: 'DENIED',
+    details: 'HTTP 403 Forbidden: Lab Technician role restricted from executive financial margin controls.'
+  },
+  {
+    id: 'sec-003',
+    timestamp: '2026-10-21 09:50:11',
+    actor_email: 'lab@natureglow.in',
+    actor_role: 'lab_tech',
+    action: 'Execute Batch #NG-2026-104 (Papaya-Coir Scrub)',
+    status: 'ALLOWED',
+    details: 'Authorized deduction of raw materials and transfer to Pending Safety Clearance.'
+  },
+  {
+    id: 'sec-004',
+    timestamp: '2026-10-20 19:25:33',
+    actor_email: 'ananya.sharma@gmail.com',
+    actor_role: 'customer',
+    action: 'Attempted ERP Dashboard Access',
+    status: 'DENIED',
+    details: 'HTTP 403 Forbidden: Customer accounts are scoped exclusively to Storefront & personal orders.'
+  }
+];
+

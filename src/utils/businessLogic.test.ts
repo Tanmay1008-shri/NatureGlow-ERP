@@ -5,9 +5,14 @@ import {
   deductMaterialsForBatch,
   calculateCOGS,
   calculateSustainabilityScore,
-  analyzeReviewSentiment
+  analyzeReviewSentiment,
+  authenticateUser,
+  registerUser,
+  canAccessERP,
+  canAccessERPModule,
+  canManageCatalog
 } from './businessLogic';
-import { RawMaterial, FormulationRecipeItem, WasteCollectionLog, Review } from '../types';
+import { RawMaterial, FormulationRecipeItem, WasteCollectionLog, Review, AuthUser } from '../types';
 
 test('calculateBatchRequirements correctly computes requirements and verifies sufficiency', () => {
   const mockMaterials: RawMaterial[] = [
@@ -192,3 +197,116 @@ test('analyzeReviewSentiment processes sentiment breakdown and flags feedback', 
   assert.equal(result.averageRating, 4.0);
   assert.ok(result.topFrictionTags.includes('Jar Seal Tightness'));
 });
+
+test('authenticateUser verifies valid credentials and rejects wrong passwords or unknown emails', () => {
+  const users: AuthUser[] = [
+    {
+      id: 'u1',
+      name: 'Admin User',
+      email: 'admin@natureglow.in',
+      password: 'Admin@123',
+      role: 'admin',
+      department: 'Executive',
+      created_at: '2026-01-01',
+      last_login: '2026-01-01'
+    }
+  ];
+
+  const valid = authenticateUser(users, 'ADMIN@natureglow.in', 'Admin@123');
+  assert.equal(valid.success, true);
+  assert.equal(valid.user?.role, 'admin');
+
+  const badPass = authenticateUser(users, 'admin@natureglow.in', 'WrongPass');
+  assert.equal(badPass.success, false);
+  assert.ok(badPass.error?.includes('Invalid password'));
+
+  const unknown = authenticateUser(users, 'nobody@natureglow.in', 'Admin@123');
+  assert.equal(unknown.success, false);
+  assert.ok(unknown.error?.includes('No account found'));
+});
+
+test('registerUser allows Customer sign-up freely but enforces Security Key for Admin and Lab Tech', () => {
+  const initialUsers: AuthUser[] = [];
+
+  // 1. Standard customer registration succeeds without passcode
+  const custReg = registerUser(initialUsers, {
+    name: 'Riya Patel',
+    email: 'riya@example.com',
+    password: 'Password123',
+    role: 'customer'
+  });
+  assert.equal(custReg.success, true);
+  assert.equal(custReg.user?.role, 'customer');
+  assert.equal(custReg.updatedUsers?.length, 1);
+
+  // 2. Unauthorized attempt to register as Admin without security key is blocked
+  const unauthorizedAdmin = registerUser(custReg.updatedUsers!, {
+    name: 'Hacker User',
+    email: 'hacker@example.com',
+    password: 'Password123',
+    role: 'admin',
+    securityPasscode: 'WRONG-CODE'
+  });
+  assert.equal(unauthorizedAdmin.success, false);
+  assert.ok(unauthorizedAdmin.error?.includes('Authorization Denied'));
+
+  // 3. Authorized Admin registration with valid security key succeeds
+  const authorizedAdmin = registerUser(custReg.updatedUsers!, {
+    name: 'Authorized Director',
+    email: 'director@natureglow.in',
+    password: 'Password123',
+    role: 'admin',
+    securityPasscode: 'NG-ADMIN-2025'
+  });
+  assert.equal(authorizedAdmin.success, true);
+  assert.equal(authorizedAdmin.user?.role, 'admin');
+});
+
+test('RBAC authorization helpers enforce module and catalog access strictly by role', () => {
+  const adminUser: AuthUser = {
+    id: '1',
+    name: 'Admin',
+    email: 'admin@natureglow.in',
+    password: 'pw',
+    role: 'admin',
+    department: 'Root',
+    created_at: '',
+    last_login: ''
+  };
+  const labUser: AuthUser = {
+    id: '2',
+    name: 'Lab',
+    email: 'lab@natureglow.in',
+    password: 'pw',
+    role: 'lab_tech',
+    department: 'Lab',
+    created_at: '',
+    last_login: ''
+  };
+  const customerUser: AuthUser = {
+    id: '3',
+    name: 'Customer',
+    email: 'cust@gmail.com',
+    password: 'pw',
+    role: 'customer',
+    department: 'Retail',
+    created_at: '',
+    last_login: ''
+  };
+
+  assert.equal(canAccessERP(null), false);
+  assert.equal(canAccessERP(customerUser), false);
+  assert.equal(canAccessERP(labUser), true);
+  assert.equal(canAccessERP(adminUser), true);
+
+  assert.equal(canManageCatalog(null), false);
+  assert.equal(canManageCatalog(customerUser), false);
+  assert.equal(canManageCatalog(labUser), false);
+  assert.equal(canManageCatalog(adminUser), true);
+
+  // Lab tech can access M3 (Production) but not M5 (Financials)
+  assert.equal(canAccessERPModule(labUser, 3), true);
+  assert.equal(canAccessERPModule(labUser, 5), false);
+  assert.equal(canAccessERPModule(adminUser, 5), true);
+});
+
